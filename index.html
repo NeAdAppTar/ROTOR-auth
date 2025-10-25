@@ -104,38 +104,50 @@ if ('VKIDSDK' in window) {
       .catch(vkidOnError);
   });
 
-  async function vkidOnSuccess(data) {
-    try {
-      console.log("Ответ VKID:", data);
+ async function vkidOnSuccess(data) {
+  try {
+    console.log("Ответ VKID:", data);
 
-      // ⚙️ Извлекаем VK ID (новый формат)
-      const userId = data.user_id || data.user?.id;
-      if (!userId) throw new Error("Не удалось получить VK ID пользователя.");
+    // Получаем VK ID
+    const userId = data.user_id || data.user?.id;
+    if (!userId) throw new Error("Не удалось получить VK ID пользователя.");
 
-      const vkUrl = `https://vk.com/id${userId}`;
-      console.log("Авторизован VK:", vkUrl);
+    // Ссылка на пользователя VK
+    const vkUrl = `https://vk.com/id${userId}`;
+    console.log("Авторизован VK:", vkUrl);
 
-      // Загружаем список сотрудников
-      const res = await fetch('https://rotor.pythonanywhere.com/user_info');
-      if (!res.ok) throw new Error('Ошибка загрузки user_info');
-      const text = await res.text();
+    // Загружаем всех сотрудников через GET
+    const res = await fetch('https://rotor.pythonanywhere.com/user_info');
+    if (!res.ok) throw new Error('Ошибка загрузки user_info');
+    const text = await res.text();
 
-      const lines = text.split('\n');
-      const found = lines.find(line => line.includes(vkUrl));
+    // Парсим строки как на employees.html
+    const lines = text.split('\n');
+    const found = lines.find(line => line.includes(vkUrl));
 
-      if (found) {
-        const username = found.split(' - ')[0].trim();
-        localStorage.setItem('username', username);
-        alert(`Добро пожаловать, ${username}!`);
-        window.location.href = 'https://rotorbus.ru/employee_dashboard.html';
-      } else {
-        alert('Ваш VK не найден в списке сотрудников.');
-      }
-    } catch (err) {
-      console.error('Ошибка VK ID:', err);
-      alert('Ошибка при авторизации. Попробуйте позже.');
+    if (found) {
+      const username = found.split(' - ')[0].trim();
+
+      // Сохраняем куки и локалсторедж
+      document.cookie = `userLogin=${username}; path=/; max-age=3600`;
+      localStorage.setItem('userLogin', username);
+
+      alert(`Добро пожаловать, ${username}!`);
+      
+      // Редирект на страницу, с которой пришли, или дашборд
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get('redirect') || '/employee_dashboard.html';
+      window.location.href = redirect;
+
+    } else {
+      alert('Ваш VK не найден в списке сотрудников.');
     }
+  } catch (err) {
+    console.error('Ошибка VK ID:', err);
+    alert('Ошибка при авторизации. Попробуйте позже.');
   }
+}
+
 
   function vkidOnError(error) {
     console.error('VK ID Error:', error);
