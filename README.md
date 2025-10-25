@@ -1,1 +1,0 @@
-# ROTOR-auth
