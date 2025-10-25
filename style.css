@@ -1,107 +1,14 @@
-:root {
-  --primary: #facc15;
-  --primary-dark: #eab308;
-  --bg: #fff;
-  --text: #111;
-  --radius: 16px;
-  --shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-}
-
-body {
-  font-family: 'Segoe UI', Roboto, sans-serif;
-  background: var(--bg);
-  margin: 0;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.auth-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-}
-
-.auth-card {
-  background: #fff;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 40px 60px;
-  text-align: center;
-  width: 340px;
-  transition: 0.3s;
-}
-
-.auth-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-}
-
-.auth-card h1 {
-  color: var(--primary-dark);
-  font-size: 2rem;
-  margin-bottom: 10px;
-}
-
-.subtitle {
-  color: #555;
-  margin-bottom: 25px;
-}
-
-input {
-  width: 100%;
-  padding: 12px;
-  border: 2px solid #eee;
-  border-radius: var(--radius);
-  margin-bottom: 15px;
-  font-size: 1rem;
-  transition: 0.3s;
-}
-
-input:focus {
-  border-color: var(--primary-dark);
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(250,204,21,0.4);
-}
-
-button {
-  background: var(--primary);
-  color: #000;
-  border: none;
-  padding: 12px;
-  border-radius: var(--radius);
-  font-weight: 600;
-  font-size: 1rem;
-  width: 100%;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-button:hover {
-  background: var(--primary-dark);
-  transform: translateY(-2px);
-}
-
-footer {
-  margin-top: 25px;
-  color: #777;
-  font-size: 0.9rem;
-}
-
-body {
+/* Общий сброс */
+html, body {
   margin: 0;
   padding: 0;
-  height: 100vh;
+  height: 100%;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #222;
   overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: Arial, sans-serif;
 }
 
+/* Фон */
 .background-image {
   position: fixed;
   top: 0;
@@ -109,14 +16,88 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  z-index: -2;
+}
+
+.background-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 230, 100, 0.15); /* лёгкий желтоватый фильтр */
   z-index: -1;
 }
 
-.content {
+/* Центрирование */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Карточка входа */
+.auth-card {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 20px;
+  padding: 40px 50px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.25);
   text-align: center;
-  color: white;
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 40px;
-  border-radius: 16px;
-  backdrop-filter: blur(6px);
+  max-width: 380px;
+  width: 90%;
+}
+
+/* Заголовок */
+.logo {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+  color: #ffcc00;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Подзаголовок */
+.subtitle {
+  color: #555;
+  font-size: 1rem;
+  margin-bottom: 25px;
+}
+
+/* Поле ввода */
+.auth-card input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* Кнопка */
+.auth-card button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #ffcc00, #ffd84d);
+  color: #222;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.auth-card button:hover {
+  background: linear-gradient(90deg, #ffd84d, #ffcc00);
+  transform: scale(1.03);
+}
+
+/* Подвал */
+footer {
+  margin-top: 25px;
+  font-size: 0.85rem;
+  color: #666;
+  line-height: 1.3;
 }
