@@ -76,85 +76,68 @@
   <script src="https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js"></script>
 
   <script>
-if ('VKIDSDK' in window) {
-  const VKID = window.VKIDSDK;
-
-  VKID.Config.init({
-    app: 54268309,
-    redirectUrl: 'https://auth.rotorbus.ru',
-    responseMode: VKID.ConfigResponseMode.Callback,
-    source: VKID.ConfigSource.LOWCODE,
-    scope: '',
-  });
-
-  const oneTap = new VKID.OneTap();
-
-  oneTap.render({
-    container: document.getElementById("vk_auth"),
-    fastAuthEnabled: false,
-    showAlternativeLogin: true
-  })
-  .on(VKID.WidgetEvents.ERROR, vkidOnError)
-  .on(VKID.OneTapInternalEvents.LOGIN_SUCCESS, function (payload) {
-    const code = payload.code;
-    const deviceId = payload.device_id;
-
-    VKID.Auth.exchangeCode(code, deviceId)
-      .then(vkidOnSuccess)
-      .catch(vkidOnError);
-  });
-
- async function vkidOnSuccess(data) {
-  try {
-    console.log("Ответ VKID:", data);
-
-    // Получаем VK ID
-    const userId = data.user_id || data.user?.id;
-    if (!userId) throw new Error("Не удалось получить VK ID пользователя.");
-
-    // Ссылка на пользователя VK
-    const vkUrl = `https://vk.com/id${userId}`;
-    console.log("Авторизован VK:", vkUrl);
-
-    // Загружаем всех сотрудников через GET
-    const res = await fetch('https://rotor.pythonanywhere.com/user_info');
-    if (!res.ok) throw new Error('Ошибка загрузки user_info');
-    const text = await res.text();
-
-    // Парсим строки как на employees.html
-    const lines = text.split('\n');
-    const found = lines.find(line => line.includes(vkUrl));
-
-    if (found) {
-      const username = found.split(' - ')[0].trim();
-
-      // Сохраняем куки и локалсторедж
+ function setUser(username) {
       document.cookie = `userLogin=${username}; path=/; max-age=3600`;
       localStorage.setItem('userLogin', username);
 
-      alert(`Добро пожаловать, ${username}!`);
-      
-      // Редирект на страницу, с которой пришли, или дашборд
-      const params = new URLSearchParams(window.location.search);
-      const redirect = params.get('redirect') || '/employee_dashboard.html';
+      const redirect = new URLSearchParams(window.location.search).get('redirect') || 'employee_dashboard.html';
       window.location.href = redirect;
-
-    } else {
-      alert('Ваш VK не найден в списке сотрудников.');
     }
-  } catch (err) {
-    console.error('Ошибка VK ID:', err);
-    alert('Ошибка при авторизации. Попробуйте позже.');
-  }
-}
 
+    async function findUserByVK(vkId) {
+      try {
+        const res = await fetch('https://rotor.pythonanywhere.com/users');
+        if (!res.ok) throw new Error('Ошибка загрузки пользователей');
+        const data = await res.json();
 
-  function vkidOnError(error) {
-    console.error('VK ID Error:', error);
-    alert('Ошибка входа через VK ID');
-  }
-}
-</script>
+        const vkUrl = `https://vk.com/id${vkId}`;
+        const found = Object.values(data).find(u => u.vk && u.vk.includes(vkUrl));
+
+        return found ? found.login : null;
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if ('VKIDSDK' in window) {
+        const VKID = window.VKIDSDK;
+        VKID.Config.init({
+          app: 54268309,
+          redirectUrl: window.location.origin + '/index.html',
+          responseMode: VKID.ConfigResponseMode.Callback,
+          source: VKID.ConfigSource.LOWCODE,
+          scope: '',
+        });
+
+        const oneTap = new VKID.OneTap();
+        oneTap.render({
+          container: document.getElementById('vkOneTapContainer'),
+          fastAuthEnabled: false,
+          showAlternativeLogin: true
+        })
+        .on(VKID.WidgetEvents.ERROR, err => console.error('VK ID Error:', err))
+        .on(VKID.OneTapInternalEvents.LOGIN_SUCCESS, async payload => {
+          try {
+            const vkId = payload.id || payload.user_id || payload.device_id;
+            const username = await findUserByVK(vkId);
+
+            if (username) {
+              setUser(username);
+            } else {
+              alert('Ваш VK не найден в списке сотрудников.');
+            }
+          } catch (err) {
+            console.error('Ошибка VK ID:', err);
+            alert('Ошибка авторизации через VK.');
+          }
+        });
+      } else {
+        alert('VK ID SDK не загружен');
+      }
+    });
+  </script>
 
 </body>
 </html>
