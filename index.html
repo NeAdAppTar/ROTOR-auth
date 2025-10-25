@@ -3,29 +3,124 @@
 <head>
   <meta charset="utf-8">
   <title>ROTOR — Авторизация</title>
-  <link rel="icon" type="image/png" href="icon.png">
-  <link rel="stylesheet" href="style1.css">
-  <script src="login.js" defer></script>
+  <link rel="icon" href="icon.png" type="image/png">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #fff7cc, #fef3c7);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .auth-card {
+      background: white;
+      padding: 40px 50px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      text-align: center;
+      width: 340px;
+    }
+
+    .auth-card h1 {
+      font-size: 32px;
+      color: #facc15;
+      margin-bottom: 10px;
+    }
+
+    .auth-card p {
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    footer {
+      margin-top: 30px;
+      font-size: 12px;
+      color: #999;
+    }
+  </style>
 </head>
 <body>
-  <div class="background-overlay">
-    <img src="pic1.jpg" alt="фон" class="background-image">
+  <div class="auth-card">
+    <h1>ROTOR</h1>
+    <p>Авторизация через VK ID</p>
+
+    <div id="vk_login"></div>
+
+    <footer>
+      <p>© ООО «Ротор» | NeAdAppTar & ShaUru1118</p>
+    </footer>
   </div>
 
-  <div class="auth-container">
-    <div class="auth-card">
-      <h1 class="logo">ROTOR</h1>
-      <p class="subtitle">Быстрый вход</p>
+  <script src="https://unpkg.com/@vkid/sdk@latest/dist-sdk/umd/index.js"></script>
+  <script type="text/javascript">
+    (function () {
+      if (!('VKIDSDK' in window)) return;
+      const VKID = window.VKIDSDK;
 
-      <form id="loginForm">
-        <input type="text" id="login" placeholder="Введите логин" required>
-        <button type="submit">Войти</button>
-      </form>
+      // Инициализация VK ID
+      VKID.Config.init({
+        app: 54268309,
+        redirectUrl: 'https://auth.rotorbus.ru',
+        responseMode: VKID.ConfigResponseMode.Callback,
+        source: VKID.ConfigSource.LOWCODE,
+        scope: ''
+      });
 
-      <footer>
-        <p>ООО «Ротор»<br>by <strong>NeAdAppTar</strong> & <strong>ShaUru1118</strong></p>
-      </footer>
-    </div>
-  </div>
+      const oneTap = new VKID.OneTap();
+
+      oneTap.render({
+        container: document.getElementById('vk_login'),
+        fastAuthEnabled: false,
+        showAlternativeLogin: true
+      })
+      .on(VKID.WidgetEvents.ERROR, vkidOnError)
+      .on(VKID.OneTapInternalEvents.LOGIN_SUCCESS, function (payload) {
+        const code = payload.code;
+        const deviceId = payload.device_id;
+
+        VKID.Auth.exchangeCode(code, deviceId)
+          .then(vkidOnSuccess)
+          .catch(vkidOnError);
+      });
+
+      async function vkidOnSuccess(data) {
+        console.log('VK ID response:', data);
+
+        // data содержит user_id и access_token
+        const vkId = data.user_id;
+
+        // 🔹 1. Проверяем на сервере, есть ли сотрудник с этим VK
+        const res = await fetch('https://rotor.pythonanywhere.com/check_vk', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ vk_id: vkId })
+        });
+
+        const result = await res.json();
+
+        if (result.status === 'ok') {
+          // 🔹 2. Устанавливаем cookie userLogin и userRole
+          document.cookie = `userLogin=${encodeURIComponent(result.login)}; path=/; SameSite=Lax`;
+          document.cookie = `userRole=${encodeURIComponent(result.role)}; path=/; SameSite=Lax`;
+
+          // 🔹 3. Возвращаем пользователя туда, откуда он пришёл
+          const params = new URLSearchParams(window.location.search);
+          const redirect = params.get('redirect') || 'https://rotorbus.ru/employee_dashboard.html';
+          window.location.href = redirect;
+        } else {
+          alert('Ваш VK не найден в списке сотрудников. Обратитесь к руководителю.');
+        }
+      }
+
+      function vkidOnError(error) {
+        console.error('Ошибка VK ID:', error);
+        alert('Ошибка при авторизации через VK');
+      }
+    })();
+  </script>
 </body>
 </html>
