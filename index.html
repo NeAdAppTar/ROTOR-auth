@@ -76,66 +76,73 @@
   <script src="https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js"></script>
 
   <script>
-    if ('VKIDSDK' in window) {
-      const VKID = window.VKIDSDK;
+if ('VKIDSDK' in window) {
+  const VKID = window.VKIDSDK;
 
-      VKID.Config.init({
-        app: 54268309,
-        redirectUrl: 'https://auth.rotorbus.ru',
-        responseMode: VKID.ConfigResponseMode.Callback,
-        source: VKID.ConfigSource.LOWCODE,
-        scope: '',
-      });
+  VKID.Config.init({
+    app: 54268309,
+    redirectUrl: 'https://auth.rotorbus.ru',
+    responseMode: VKID.ConfigResponseMode.Callback,
+    source: VKID.ConfigSource.LOWCODE,
+    scope: '',
+  });
 
-      const oneTap = new VKID.OneTap();
+  const oneTap = new VKID.OneTap();
 
-      oneTap.render({
-        container: document.getElementById("vk_auth"),
-        fastAuthEnabled: false,
-        showAlternativeLogin: true
-      })
-      .on(VKID.WidgetEvents.ERROR, vkidOnError)
-      .on(VKID.OneTapInternalEvents.LOGIN_SUCCESS, function (payload) {
-        const code = payload.code;
-        const deviceId = payload.device_id;
+  oneTap.render({
+    container: document.getElementById("vk_auth"),
+    fastAuthEnabled: false,
+    showAlternativeLogin: true
+  })
+  .on(VKID.WidgetEvents.ERROR, vkidOnError)
+  .on(VKID.OneTapInternalEvents.LOGIN_SUCCESS, function (payload) {
+    const code = payload.code;
+    const deviceId = payload.device_id;
 
-        VKID.Auth.exchangeCode(code, deviceId)
-          .then(vkidOnSuccess)
-          .catch(vkidOnError);
-      });
+    VKID.Auth.exchangeCode(code, deviceId)
+      .then(vkidOnSuccess)
+      .catch(vkidOnError);
+  });
 
-      async function vkidOnSuccess(data) {
-        try {
-          const user = data.user;
-          const vkUrl = `https://vk.com/id${user.id}`;
-          console.log("Авторизован VK:", vkUrl);
+  async function vkidOnSuccess(data) {
+    try {
+      console.log("Ответ VKID:", data);
 
-          const res = await fetch('https://rotor.pythonanywhere.com/user_info');
-          if (!res.ok) throw new Error('Ошибка загрузки user_info');
-          const text = await res.text();
+      // ⚙️ Извлекаем VK ID (новый формат)
+      const userId = data.user_id || data.user?.id;
+      if (!userId) throw new Error("Не удалось получить VK ID пользователя.");
 
-          const lines = text.split('\n');
-          const found = lines.find(line => line.includes(vkUrl));
+      const vkUrl = `https://vk.com/id${userId}`;
+      console.log("Авторизован VK:", vkUrl);
 
-          if (found) {
-            const username = found.split(' - ')[0].trim();
-            localStorage.setItem('username', username);
-            alert(`Добро пожаловать, ${username}!`);
-            window.location.href = 'https://rotorbus.ru/employee_dashboard.html';
-          } else {
-            alert('Ваш VK не найден в списке сотрудников.');
-          }
-        } catch (err) {
-          console.error('Ошибка VK ID:', err);
-          alert('Ошибка при авторизации. Попробуйте позже.');
-        }
+      // Загружаем список сотрудников
+      const res = await fetch('https://rotor.pythonanywhere.com/user_info');
+      if (!res.ok) throw new Error('Ошибка загрузки user_info');
+      const text = await res.text();
+
+      const lines = text.split('\n');
+      const found = lines.find(line => line.includes(vkUrl));
+
+      if (found) {
+        const username = found.split(' - ')[0].trim();
+        localStorage.setItem('username', username);
+        alert(`Добро пожаловать, ${username}!`);
+        window.location.href = 'https://rotorbus.ru/employee_dashboard.html';
+      } else {
+        alert('Ваш VK не найден в списке сотрудников.');
       }
-
-      function vkidOnError(error) {
-        console.error('VK ID Error:', error);
-        alert('Ошибка входа через VK ID');
-      }
+    } catch (err) {
+      console.error('Ошибка VK ID:', err);
+      alert('Ошибка при авторизации. Попробуйте позже.');
     }
-  </script>
+  }
+
+  function vkidOnError(error) {
+    console.error('VK ID Error:', error);
+    alert('Ошибка входа через VK ID');
+  }
+}
+</script>
+
 </body>
 </html>
