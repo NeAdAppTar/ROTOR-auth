@@ -3,77 +3,94 @@
 <head>
   <meta charset="utf-8">
   <title>ROTOR — Авторизация</title>
-  <link rel="icon" href="icon.png" type="image/png">
+  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="stylesheet" href="style.css">
+
   <style>
+    /* Полноэкранный фон */
     body {
       margin: 0;
       padding: 0;
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #fff7cc, #fef3c7);
       height: 100vh;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      background: url("pic1.jpg") no-repeat center center fixed;
+      background-size: cover;
+      font-family: "Segoe UI", sans-serif;
+      color: white;
     }
 
+    /* Карточка авторизации */
     .auth-card {
-      background: white;
-      padding: 40px 50px;
+      background: rgba(0, 0, 0, 0.65);
+      padding: 40px;
       border-radius: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
       text-align: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.6);
       width: 340px;
     }
 
     .auth-card h1 {
-      font-size: 32px;
-      color: #facc15;
-      margin-bottom: 10px;
+      margin: 0 0 10px 0;
+      font-size: 2em;
+      letter-spacing: 1px;
     }
 
     .auth-card p {
-      color: #666;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
+      color: #ccc;
+    }
+
+    /* Кнопка выхода (если нужно показывать после входа) */
+    .logout-btn {
+      margin-top: 15px;
+      background: #ff5555;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
     }
 
     footer {
-      margin-top: 30px;
       font-size: 12px;
-      color: #999;
+      color: #aaa;
+      margin-top: 30px;
     }
   </style>
 </head>
+
 <body>
   <div class="auth-card">
     <h1>ROTOR</h1>
-    <p>Авторизация через VK ID</p>
+    <p>Вход через VK ID</p>
 
-    <div id="vk_login"></div>
+    <div id="vk_auth"></div>
 
     <footer>
-      <p>© ООО «Ротор» | NeAdAppTar & ShaUru1118</p>
+      <p>ООО "Ротор", by NeAdAppTar, ShaUru1118</p>
     </footer>
   </div>
 
-  <script src="https://unpkg.com/@vkid/sdk@latest/dist-sdk/umd/index.js"></script>
-  <script type="text/javascript">
-    (function () {
-      if (!('VKIDSDK' in window)) return;
+  <script src="https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js"></script>
+
+  <script>
+    if ('VKIDSDK' in window) {
       const VKID = window.VKIDSDK;
 
-      // Инициализация VK ID
       VKID.Config.init({
         app: 54268309,
         redirectUrl: 'https://auth.rotorbus.ru',
         responseMode: VKID.ConfigResponseMode.Callback,
         source: VKID.ConfigSource.LOWCODE,
-        scope: ''
+        scope: '',
       });
 
       const oneTap = new VKID.OneTap();
 
       oneTap.render({
-        container: document.getElementById('vk_login'),
+        container: document.getElementById("vk_auth"),
         fastAuthEnabled: false,
         showAlternativeLogin: true
       })
@@ -88,39 +105,37 @@
       });
 
       async function vkidOnSuccess(data) {
-        console.log('VK ID response:', data);
+        try {
+          const user = data.user;
+          const vkUrl = `https://vk.com/id${user.id}`;
+          console.log("Авторизован VK:", vkUrl);
 
-        // data содержит user_id и access_token
-        const vkId = data.user_id;
+          const res = await fetch('https://rotor.pythonanywhere.com/user_info');
+          if (!res.ok) throw new Error('Ошибка загрузки user_info');
+          const text = await res.text();
 
-        // 🔹 1. Проверяем на сервере, есть ли сотрудник с этим VK
-        const res = await fetch('https://rotor.pythonanywhere.com/check_vk', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ vk_id: vkId })
-        });
+          const lines = text.split('\n');
+          const found = lines.find(line => line.includes(vkUrl));
 
-        const result = await res.json();
-
-        if (result.status === 'ok') {
-          // 🔹 2. Устанавливаем cookie userLogin и userRole
-          document.cookie = `userLogin=${encodeURIComponent(result.login)}; path=/; SameSite=Lax`;
-          document.cookie = `userRole=${encodeURIComponent(result.role)}; path=/; SameSite=Lax`;
-
-          // 🔹 3. Возвращаем пользователя туда, откуда он пришёл
-          const params = new URLSearchParams(window.location.search);
-          const redirect = params.get('redirect') || 'https://rotorbus.ru/employee_dashboard.html';
-          window.location.href = redirect;
-        } else {
-          alert('Ваш VK не найден в списке сотрудников. Обратитесь к руководителю.');
+          if (found) {
+            const username = found.split(' - ')[0].trim();
+            localStorage.setItem('username', username);
+            alert(`Добро пожаловать, ${username}!`);
+            window.location.href = 'https://rotorbus.ru/employee_dashboard.html';
+          } else {
+            alert('Ваш VK не найден в списке сотрудников.');
+          }
+        } catch (err) {
+          console.error('Ошибка VK ID:', err);
+          alert('Ошибка при авторизации. Попробуйте позже.');
         }
       }
 
       function vkidOnError(error) {
-        console.error('Ошибка VK ID:', error);
-        alert('Ошибка при авторизации через VK');
+        console.error('VK ID Error:', error);
+        alert('Ошибка входа через VK ID');
       }
-    })();
+    }
   </script>
 </body>
 </html>
