@@ -3,80 +3,69 @@
 <head>
   <meta charset="utf-8">
   <title>ROTOR — Авторизация</title>
-  <link rel="icon" type="image/png" href="icon.png">
   <link rel="stylesheet" href="style.css">
-
+  <link rel="icon" type="image/png" href="icon.png">
+  <script src="https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js" defer></script>
   <style>
-    /* Полноэкранный фон */
     body {
       margin: 0;
-      padding: 0;
-      height: 100vh;
+      font-family: 'Segoe UI', Roboto, sans-serif;
       display: flex;
-      justify-content: center;
       align-items: center;
-      background: url("pic1.jpg") no-repeat center center fixed;
-      background-size: cover;
-      font-family: "Segoe UI", sans-serif;
-      color: white;
+      justify-content: center;
+      height: 100vh;
+      background: #fdf6e3;
+      flex-direction: column;
     }
-
-    /* Карточка авторизации */
     .auth-card {
-      background: rgba(0, 0, 0, 0.65);
+      background: #fff8dc;
       padding: 40px;
       border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
       text-align: center;
-      box-shadow: 0 0 20px rgba(0,0,0,0.6);
-      width: 340px;
+      max-width: 400px;
+      width: 90%;
     }
-
     .auth-card h1 {
-      margin: 0 0 10px 0;
-      font-size: 2em;
-      letter-spacing: 1px;
+      margin-bottom: 10px;
+      color: #facc15;
+      font-size: 2rem;
     }
-
-    .auth-card p {
-      margin-bottom: 25px;
-      color: #ccc;
+    .auth-card p.subtitle {
+      color: #111827;
+      margin-bottom: 20px;
     }
-
-    /* Кнопка выхода (если нужно показывать после входа) */
     .logout-btn {
-      margin-top: 15px;
-      background: #ff5555;
-      color: white;
+      margin-top: 20px;
+      background: #facc15;
       border: none;
       padding: 10px 20px;
-      border-radius: 10px;
+      font-weight: 600;
+      border-radius: 12px;
       cursor: pointer;
     }
-
-    footer {
-      font-size: 12px;
-      color: #aaa;
-      margin-top: 30px;
+    .logout-btn:hover {
+      background: #eab308;
     }
   </style>
 </head>
-
 <body>
+
   <div class="auth-card">
     <h1>ROTOR</h1>
-    <p>Вход через VK ID</p>
-
-    <div id="vk_auth"></div>
-
-    <footer>
-      <p>ООО "Ротор", by NeAdAppTar, ShaUru1118</p>
-    </footer>
+    <p class="subtitle">Вход через VK</p>
+    <div id="vkOneTapContainer"></div>
+    <button class="logout-btn" onclick="logout()">Выйти</button>
   </div>
 
-  <script src="https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js"></script>
-
   <script>
- function setUser(username) {
+    function logout() {
+      document.cookie = "userLogin=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+      localStorage.removeItem('userLogin');
+      location.reload();
+    }
+
+    function setUser(username) {
       document.cookie = `userLogin=${username}; path=/; max-age=3600`;
       localStorage.setItem('userLogin', username);
 
