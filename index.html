@@ -1,31 +1,93 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <title>ROTOR — Авторизация</title>
-  <link rel="icon" type="image/png" href="icon.png">
-  <link rel="stylesheet" href="style1.css">
-  <script src="login.js" defer></script>
+  <meta charset="UTF-8">
+  <title>Авторизация</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="background-overlay">
-    <img src="pic1.jpg" alt="фон" class="background-image">
-  </div>
+  <main class="container">
+    <h1>Авторизация</h1>
 
-  <div class="auth-container">
-    <div class="auth-card">
-      <h1 class="logo">ROTOR</h1>
-      <p class="subtitle">Быстрый вход</p>
+    <form id="loginForm">
+      <label>
+        Логин:
+        <input type="text" id="login" required>
+      </label>
+      <br><br>
 
-      <form id="loginForm">
-        <input type="text" id="login" placeholder="Введите логин" required>
-        <button type="submit">Войти</button>
-      </form>
+      <label>
+        <input type="checkbox" id="isStaff"> Войти как руководитель
+      </label>
+      <br><br>
 
-      <footer>
-        <p>ООО «Ротор»<br>by <strong>NeAdAppTar</strong> & <strong>ShaUru1118</strong></p>
-      </footer>
-    </div>
-  </div>
+      <div id="passwordContainer" style="display:none;">
+        <label>
+          Пароль:
+          <input type="password" id="password">
+        </label>
+      </div>
+      <br>
+
+      <button type="submit">Войти</button>
+    </form>
+
+    <p id="error" style="color:red;"></p>
+  </main>
+
+  <script>
+    // Скрытие/показ поля пароля для руководителя
+    const isStaffCheckbox = document.getElementById('isStaff');
+    const passwordContainer = document.getElementById('passwordContainer');
+    isStaffCheckbox.addEventListener('change', () => {
+      passwordContainer.style.display = isStaffCheckbox.checked ? 'block' : 'none';
+    });
+
+    const staffUsers = {
+      'admin': '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', // admin123
+      'director': '2bb80d537b1da3e38bd30361aa855686bde0ba445b7fa4f0b9f0b1e0e6a3a1c3' // 123456
+    };
+
+    async function hashPassword(password) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(password);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const login = document.getElementById('login').value.trim();
+      const password = document.getElementById('password').value;
+      const error = document.getElementById('error');
+
+      if (!login) {
+        error.textContent = 'Введите логин';
+        return;
+      }
+
+      if (isStaffCheckbox.checked) {
+        // Авторизация руководителя
+        if (!password) {
+          error.textContent = 'Введите пароль';
+          return;
+        }
+        const hash = await hashPassword(password);
+        if (staffUsers[login] && staffUsers[login] === hash) {
+          localStorage.setItem('userLogin', login);
+          localStorage.setItem('isStaff', 'true');
+          window.location.href = 'https://staff.rotorbus.ru/dashboard.html';
+        } else {
+          error.textContent = 'Неверный логин или пароль руководителя';
+        }
+      } else {
+        // Обычный пользователь
+        localStorage.setItem('userLogin', login);
+        localStorage.setItem('isStaff', 'false');
+        window.location.href = 'https://rotorbus.ru/employee_dashboard.html';
+      }
+    });
+  </script>
 </body>
 </html>
