@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>ROTOR — Авторизация</title>
+  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="stylesheet" href="style1.css">
+  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.min.js"></script>
+  <script src="login.js" defer></script>
+</head>
+<body>
+  <div class="background-overlay">
+    <img src="pic1.jpg" alt="фон" class="background-image">
+  </div>
+
+  <div class="auth-container">
+    <div class="auth-card">
+      <h1 class="logo">ROTOR</h1>
+      <p class="subtitle">Быстрый вход</p>
+
+      <!-- Форма для сотрудников -->
+      <form id="loginForm">
+        <input type="text" id="login" placeholder="Введите логин" required>
+        <button type="submit">Войти</button>
+      </form>
+
+      <hr>
+
+      <!-- Форма для руководителей -->
+      <button id="leaderBtn">Войти как руководитель</button>
+
+      <form id="leaderForm" style="display:none; margin-top:10px;">
+        <input type="text" id="leaderLogin" placeholder="Логин руководителя" required>
+        <input type="password" id="leaderPassword" placeholder="Пароль" required>
+        <button type="submit">Подтвердить</button>
+      </form>
+
+      <footer>
+        <p>ООО «Ротор»<br>by <strong>NeAdAppTar</strong> & <strong>ShaUru1118</strong></p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

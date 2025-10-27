@@ -1,0 +1,102 @@
+/* Общий сброс */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  color: #222;
+  overflow: hidden;
+}
+
+/* Фон */
+.background-image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2;
+}
+
+.background-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 230, 100, 0.15);
+  z-index: -1;
+}
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Карточка входа */
+.auth-card {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 20px;
+  padding: 40px 50px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  max-width: 380px;
+  width: 90%;
+}
+
+/* Заголовок */
+.logo {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Подзаголовок */
+.subtitle {
+  color: #555;
+  font-size: 1rem;
+  margin-bottom: 25px;
+}
+
+/* Поле ввода */
+.auth-card input {
+  width: 93%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* Кнопка */
+.auth-card button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #ffcc00, #ffd84d);
+  color: #222;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.auth-card button:hover {
+  background: linear-gradient(90deg, #ffd84d, #ffcc00);
+  transform: scale(1.03);
+}
+
+/* Подвал */
+footer {
+  margin-top: 25px;
+  font-size: 0.85rem;
+  color: #666;
+  line-height: 1.3;
+}
