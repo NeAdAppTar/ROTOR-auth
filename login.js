@@ -1,95 +1,15 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const secretKey = "rotor_secret_key_2025";
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+  e.preventDefault();
 
-  const leaders = {
-    "Ivan_Trufanov": "U2FsdGVkX18YZL9X4AciAxyaG9EZlXQQj5Et8TnLN9k="
-  };
+  const login = document.getElementById('login').value.trim();
+  if (!login) return alert('Введите логин');
 
-  function setCookie(name, value) {
-    try {
-      document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${60 * 60 * 24 * 7}`;
-    } catch (e) {
-      console.warn('⚠️ Cookie не установлены (локальный запуск):', e);
-    }
-  }
+  document.cookie = `userLogin=${encodeURIComponent(login)}; path=/; domain=.rotorbus.ru; max-age=${60 * 60 * 24 * 7}`;
 
-  function redirectTo(url) {
-    window.location.href = decodeURIComponent(url);
-  }
+  localStorage.setItem('username', login);
 
-  // ---------- обычный вход ----------
-  const loginForm = document.getElementById('loginForm');
-  if (loginForm) {
-    loginForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const login = document.getElementById('login').value.trim();
-      if (!login) return alert('Введите логин');
+  const params = new URLSearchParams(window.location.search);
+  const redirect = params.get('redirect') || 'https://rotorbus.ru/employee_dashboard.html';
 
-      localStorage.clear();
-
-      localStorage.setItem('username', login);
-      localStorage.setItem('role', 'employee');
-      setCookie('userLogin', login);
-
-      const params = new URLSearchParams(window.location.search);
-      const redirect = params.get('redirect') || 'https://rotorbus.ru/employee_dashboard.html';
-      redirectTo(redirect);
-    });
-  }
-
-  // ---------- форма руководителя ----------
-  const leaderBtn = document.getElementById('leaderBtn');
-  const leaderForm = document.getElementById('leaderForm');
-
-  if (leaderBtn && leaderForm) {
-    leaderBtn.addEventListener('click', () => {
-      leaderForm.style.display = leaderForm.style.display === 'none' ? 'block' : 'none';
-    });
-
-    leaderForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      const login = document.getElementById('leaderLogin').value.trim();
-      const password = document.getElementById('leaderPassword').value.trim();
-
-      if (!leaders[login]) {
-        alert('Неверный логин руководителя');
-        return;
-      }
-
-      try {
-        const decrypted = CryptoJS.AES.decrypt(leaders[login], secretKey).toString(CryptoJS.enc.Utf8);
-
-        if (password === decrypted) {
-          localStorage.clear();
-
-          localStorage.setItem('username', login);
-          localStorage.setItem('role', 'leader');
-          setCookie('userLogin', login);
-
-          alert(`Добро пожаловать, ${login}!`);
-          redirectTo('https://staff.rotorbus.ru/dashboard.html');
-        } else {
-          alert('Неверный пароль');
-        }
-      } catch (err) {
-        console.error('Ошибка при проверке пароля:', err);
-        alert('Ошибка проверки пароля');
-      }
-    });
-  }
-
-  //авто-перенаправление, если уже вошёл
-  const role = localStorage.getItem('role');
-  const user = localStorage.getItem('username');
-
-  if (role && user) {
-    if (role === 'leader') {
-      console.log(`🔁 Автовход руководителя (${user})`);
-      redirectTo('https://staff.rotorbus.ru/dashboard.html');
-    } else if (role === 'employee') {
-      console.log(`🔁 Автовход сотрудника (${user})`);
-      redirectTo('https://rotorbus.ru/employee_dashboard.html');
-    }
-  }
+  window.location.href = decodeURIComponent(redirect);
 });
