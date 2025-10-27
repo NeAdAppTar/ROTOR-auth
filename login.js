@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('username', login);
         localStorage.setItem('role', 'leader');
         document.cookie = `userLogin=${encodeURIComponent(login)}; path=/; domain=.rotorbus.ru; max-age=${60*60*24*7}`;
-        window.location.href = 'https://staff.rotorbus.ru/dashboard.html';
+        window.location.href = `https://staff.rotorbus.ru/dashboard.html?user=${encodeURIComponent(login)}`;
       } else {
         alert('Неверный пароль');
       }
