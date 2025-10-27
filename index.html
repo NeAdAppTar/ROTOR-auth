@@ -5,6 +5,7 @@
   <title>ROTOR — Авторизация</title>
   <link rel="icon" type="image/png" href="icon.png">
   <link rel="stylesheet" href="style1.css">
+  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.min.js"></script>
   <script src="login.js" defer></script>
 </head>
 <body>
@@ -20,6 +21,17 @@
       <form id="loginForm">
         <input type="text" id="login" placeholder="Введите логин" required>
         <button type="submit">Войти</button>
+      </form>
+
+      <hr>
+
+      <button id="leaderBtn">Войти как руководитель</button>
+
+
+      <form id="leaderForm" style="display:none; margin-top:10px;">
+        <input type="text" id="leaderLogin" placeholder="Логин руководителя" required>
+        <input type="password" id="leaderPassword" placeholder="Пароль" required>
+        <button type="submit">Подтвердить</button>
       </form>
 
       <footer>
