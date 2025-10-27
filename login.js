@@ -82,10 +82,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //авто-перенаправление, если уже вошёл
   const role = localStorage.getItem('role');
-  const user = localStorage.getItem('username');
+  const username = localStorage.getItem('username');
 
 
   if (username && role) {
+
     if (role === 'leader') {
       window.location.replace('https://staff.rotorbus.ru/leader_dashboard.html');
     } else {
