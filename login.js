@@ -3,7 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const leaders = {
     "Ivan_Trufanov": "U2FsdGVkX18YZL9X4AciAxyaG9EZlXQQj5Et8TnLN9k=",
-    "Альберт Саргсян": "U2FsdGVkX18MFNQhm5y3JIGRFUiB5etIM5Tk0EGiY0hTkx6r1SJhPXdRU78QjmHF"
+    "Альберт Саргсян": "U2FsdGVkX18MFNQhm5y3JIGRFUiB5etIM5Tk0EGiY0hTkx6r1SJhPXdRU78QjmHF",
+    "Arseniy_Matveenko" : "U2FsdGVkX19S6k4+69DNG1QrcgbAZw64vLmATUeZSj/vdHbiWO+HI5dbGPGlcrCt",
+    "Aravan_Legends" : "U2FsdGVkX18do9+7nLkstQWH1pgQzbCFI380iY/sS4Q="
     
   };
 
