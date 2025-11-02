@@ -5,7 +5,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   const leaders = {
-    "Ivan_Trufanov": { salt: "b3f1e2a4c5d67890b1c2d3e4f5a6b7c8", hash: "9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8", iterations: 200000 },
+    "Ivan_Trufanov": {
+    "salt": "73b55d89bf29038a4888639380c249b9",
+    "hash": "1703c2155d7840270c2582499997e7bf5dd5b0463ba294f4ec6269384bd0127e",
+    "iterations": 200000 },
     "Альберт Саргсян": { salt: "d4c3b2a1908f7e6d5c4b3a2f1e0d9c8", hash: "a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0", iterations: 200000 },
     "Arseniy_Matveenko": { salt: "c0ffee112233445566778899aabbccdd", hash: "0f1e2d3c4b5a69788796a5b4c3d2e1f00112233445566778899aabbccddeeff0", iterations: 200000 },
     "Aravan_Legends": { salt: "Bedniy", hash: "dedniy", iterations: 200000 }
