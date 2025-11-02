@@ -5,9 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   const leaders = {
-    "Ivan_Trufanov": {
-    "salt": "4090d7fadfda9f0cbfeb17c08e73d5d6",
-    "hash": "6450217e2056e5fa617ee6d1868f5a6bf0d0eccb5c1464b38027c9920426561e",
+  "Ivan_Trufanov": {
+    "salt": "7fe7e750926b8e5802754b1b0881392c2dbbb4393155dca51b3bc9180dc3678a",
+    "hash": "2e670546c00f2321999474c3f7c01b6cb2e300e855e7056f000c6acae79f09ec",
     "iterations": 200000
   },
     "Альберт Саргсян": { salt: "d4c3b2a1908f7e6d5c4b3a2f1e0d9c8", hash: "a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0", iterations: 200000 },
