@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const API_URL = "/get-password"; 
+  const API_URL = "https://rotor.pythonanywhere.com/get-password";
 
   document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -13,22 +13,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ login })
-      });
+      // GET!!!!!
+      const response = await fetch(`${API_URL}?login=${encodeURIComponent(login)}`);
+      
+      if (!response.ok) {
+        alert(`Ошибка запроса (${response.status})`);
+        return;
+      }
 
       const data = await response.json();
 
+      // не нашли
       if (data.status === "error") {
         alert(data.message || "Пользователь не найден");
         return;
       }
 
+      // нашли
       if (data.status === "ok") {
         if (data.password === password) {
-          // Успешный вход
+          // успех
           document.cookie = `userLogin=${encodeURIComponent(login)}; path=/; domain=.rotorbus.ru; max-age=${60*60*24*7}`;
           localStorage.setItem('username', login);
           localStorage.setItem('role', 'employee');
