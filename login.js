@@ -1,12 +1,28 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Обработка входа сотрудника
+  const toast = document.getElementById('toast');
+
+  // Функция показа уведомлений
+  function showToast(message, color = 'rgba(255, 87, 34, 0.9)') {
+    toast.textContent = message;
+    toast.style.backgroundColor = color;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  // Обработка формы входа
   document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const login = document.getElementById('login').value.trim();
     const password = document.getElementById('password').value.trim();
+    const button = e.target.querySelector('button');
 
-    if (!login || !password) return alert('Введите логин и пароль');
+    if (!login || !password) return showToast('Введите логин и пароль');
+
+    // Визуальный индикатор загрузки
+    button.disabled = true;
+    const oldText = button.textContent;
+    button.textContent = 'Проверка...';
 
     try {
       const response = await fetch('https://rotor.pythonanywhere.com/get-password', {
@@ -23,22 +39,23 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('username', login);
         localStorage.setItem('role', 'employee');
 
-        // Переход на панель сотрудника
         const params = new URLSearchParams(window.location.search);
         const redirect = params.get('redirect') || 'https://rotorbus.ru/employee_dashboard.html';
         window.location.href = decodeURIComponent(redirect);
-
       } else {
-        alert('Неверный логин или пароль');
+        showToast('Неверный логин или пароль');
       }
 
     } catch (error) {
       console.error('Ошибка при подключении к API:', error);
-      alert('Ошибка соединения с сервером');
+      showToast('Ошибка соединения с сервером');
+    } finally {
+      button.disabled = false;
+      button.textContent = oldText;
     }
   });
 
-  // Кнопки
+  // Кнопки переходов
   document.getElementById("managerLogin").addEventListener("click", () => {
     window.location.href = "https://rotorbus.ru/uvehicles.html";
   });
