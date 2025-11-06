@@ -1,4 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const secretKey = "rotor_secret_key_2025";
+
+  const leaders = {
+    "Ivan_Trufanov": "U2FsdGVkX18YZL9X4AciAxyaG9EZlXQQj5Et8TnLN9k=",
+    "Альберт Саргсян": "U2FsdGVkX18MFNQhm5y3JIGRFUiB5etIM5Tk0EGiY0hTkx6r1SJhPXdRU78QjmHF",
+    "Arseniy_Matveenko" : "U2FsdGVkX19S6k4+69DNG1QrcgbAZw64vLmATUeZSj/vdHbiWO+HI5dbGPGlcrCt",
+    "Aravan_Legends" : "U2FsdGVkX18do9+7nLkstQWH1pgQzbCFI380iY/sS4Q="
+    
+  };
+
+  // ---------- Сотрудники 
+  document.getElementById('loginForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const login = document.getElementById('login').value.trim();
+    if (!login) return alert('Введите логин');
+
+    document.cookie = `userLogin=${encodeURIComponent(login)}; path=/; domain=.rotorbus.ru; max-age=${60*60*24*7}`;
+    localStorage.setItem('username', login);
+    localStorage.setItem('role', 'employee');
+
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get('redirect') || 'https://rotorbus.ru/employee_dashboard.html';
+    window.location.href = decodeURIComponent(redirect);
+  });
+
+  // ---------- Руководители
   const leaderBtn = document.getElementById('leaderBtn');
   const leaderForm = document.getElementById('leaderForm');
 
@@ -6,43 +32,26 @@ document.addEventListener('DOMContentLoaded', () => {
     leaderForm.style.display = leaderForm.style.display === 'none' ? 'block' : 'none';
   });
 
-  leaderForm.addEventListener('submit', async (e) => {
+  leaderForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const login = document.getElementById('leaderLogin').value.trim();
     const password = document.getElementById('leaderPassword').value.trim();
 
-    if (!login || !password) {
-      return alert('Введите логин и пароль');
-    }
+    if (!leaders[login]) return alert('Неверный логин руководителя');
 
     try {
-      // Запрос к API
-      const response = await fetch('https://rotor.pythonanywhere.com/get-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ login })
-      });
-
-      const data = await response.json();
-
-      if (data.status === 'ok') {
-        if (data.password === password) {
-          // Сохраняем сессию
-          localStorage.setItem('username', login);
-          localStorage.setItem('role', 'leader');
-          document.cookie = `userLogin=${encodeURIComponent(login)}; path=/; domain=.rotorbus.ru; max-age=${60*60*24*7}`;
-          window.location.href = `https://staff.rotorbus.ru/dashboard.html?user=${encodeURIComponent(login)}`;
-        } else {
-          alert('Неверный пароль');
-        }
+      const decrypted = CryptoJS.AES.decrypt(leaders[login], secretKey).toString(CryptoJS.enc.Utf8);
+      if (password === decrypted) {
+        localStorage.setItem('username', login);
+        localStorage.setItem('role', 'leader');
+        document.cookie = `userLogin=${encodeURIComponent(login)}; path=/; domain=.rotorbus.ru; max-age=${60*60*24*7}`;
+        window.location.href = `https://staff.rotorbus.ru/dashboard.html?user=${encodeURIComponent(login)}`;
       } else {
-        alert(data.message || 'Пользователь не найден');
+        alert('Неверный пароль');
       }
-    } catch (err) {
-      console.error(err);
+    } catch(err) {
       alert('Ошибка проверки пароля');
+      console.error(err);
     }
   });
 });

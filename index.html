@@ -8,12 +8,20 @@
   <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.min.js"></script>
   <script src="login.js" defer></script>
   <style>
+
+
+
+
     .background-image {
       width: 100%;
       height: 100%;
       object-fit: cover;
       filter: brightness(0.4);
     }
+
+
+
+
 
     .logo {
       margin: 0;
@@ -99,10 +107,9 @@
       <h1 class="logo">ROTOR</h1>
       <p class="subtitle">Быстрый вход</p>
 
-      <!-- Форма авторизации -->
+      <!-- Форма для сотрудников -->
       <form id="loginForm">
         <input type="text" id="login" placeholder="Введите логин" required>
-        <input type="password" id="password" placeholder="Введите пароль" required>
         <button type="submit">Войти</button>
       </form>
 
@@ -119,14 +126,20 @@
     </div>
   </div>
 
-  <script>
-    document.getElementById("managerLogin").addEventListener("click", () => {
-      window.location.href = "https://rotorbus.ru/uvehicles.html";
-    });
+    <script>
+      document.getElementById("managerLogin").addEventListener("click", () => {
+        window.location.href = "https://rotorbus.ru/uvehicles.html";
+      });
 
-    document.getElementById("helpBtn").addEventListener("click", () => {
-      window.location.href = "https://rotorbus.ru/info.html";
-    });
-  </script>
+      document.getElementById("helpBtn").addEventListener("click", () => {
+        window.location.href = "https://rotorbus.ru/info.html";
+      });
+    </script>
+
+      <footer>
+        <p>ООО «Ротор»<br>by <strong>NeAdAppTar</strong> & <strong>ShaUru1118</strong></p>
+      </footer>
+    </div>
+  </div>
 </body>
 </html>
