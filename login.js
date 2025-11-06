@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const password = document.getElementById('password').value.trim();
     const button = e.target.querySelector('button');
 
-    if (!login || !password) return showToast('Введите логин и пароль');
+    if (!login) return showToast('Введите логин');
 
     // Визуальный индикатор загрузки
     button.disabled = true;
@@ -33,7 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const data = await response.json();
 
-      if (data.status === 'ok' && data.password === password) {
+      if (
+        data.status === 'ok' &&
+        (data.password === password || (!data.password && !password))
+      ) {
         // Авторизация успешна
         document.cookie = `userLogin=${encodeURIComponent(login)}; path=/; domain=.rotorbus.ru; max-age=${60*60*24*7}`;
         localStorage.setItem('username', login);
