@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const API_URL = "https://rotor.pythonanywhere.com/get-password";
+  const API_URL = "https://auth.rotorbus.ru/get-password";
 
   document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -13,26 +13,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      // GET!!!!!
+      // ⚙️ Отправляем GET-запрос
       const response = await fetch(`${API_URL}?login=${encodeURIComponent(login)}`);
-      
+
+      // Проверяем статус HTTP
       if (!response.ok) {
-        alert(`Ошибка запроса (${response.status})`);
+        alert(`Ошибка запроса: ${response.status}`);
         return;
       }
 
+      // Парсим JSON
       const data = await response.json();
 
-      // не нашли
       if (data.status === "error") {
         alert(data.message || "Пользователь не найден");
         return;
       }
 
-      // нашли
       if (data.status === "ok") {
         if (data.password === password) {
-          // успех
+          // ✅ Успешный вход
           document.cookie = `userLogin=${encodeURIComponent(login)}; path=/; domain=.rotorbus.ru; max-age=${60*60*24*7}`;
           localStorage.setItem('username', login);
           localStorage.setItem('role', 'employee');
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } catch (err) {
       console.error('Ошибка при обращении к серверу:', err);
-      alert('Ошибка соединения с сервером');
+      alert('Ошибка соединения с сервером или формат ответа неверен');
     }
   });
 });
