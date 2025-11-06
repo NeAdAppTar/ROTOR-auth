@@ -1,52 +1,48 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const API_URL = "https://auth.rotorbus.ru/get-password";
+  const leaderBtn = document.getElementById('leaderBtn');
+  const leaderForm = document.getElementById('leaderForm');
 
-  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  leaderBtn.addEventListener('click', () => {
+    leaderForm.style.display = leaderForm.style.display === 'none' ? 'block' : 'none';
+  });
+
+  leaderForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-
-    const login = document.getElementById('login').value.trim();
-    const password = document.getElementById('password').value.trim();
+    const login = document.getElementById('leaderLogin').value.trim();
+    const password = document.getElementById('leaderPassword').value.trim();
 
     if (!login || !password) {
-      alert('Введите логин и пароль');
-      return;
+      return alert('Введите логин и пароль');
     }
 
     try {
-      // ⚙️ Отправляем GET-запрос
-      const response = await fetch(`${API_URL}?login=${encodeURIComponent(login)}`);
+      // Запрос к API
+      const response = await fetch('https://rotor.pythonanywhere.com/get-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ login })
+      });
 
-      // Проверяем статус HTTP
-      if (!response.ok) {
-        alert(`Ошибка запроса: ${response.status}`);
-        return;
-      }
-
-      // Парсим JSON
       const data = await response.json();
 
-      if (data.status === "error") {
-        alert(data.message || "Пользователь не найден");
-        return;
-      }
-
-      if (data.status === "ok") {
+      if (data.status === 'ok') {
         if (data.password === password) {
-          // ✅ Успешный вход
-          document.cookie = `userLogin=${encodeURIComponent(login)}; path=/; domain=.rotorbus.ru; max-age=${60*60*24*7}`;
+          // Сохраняем сессию
           localStorage.setItem('username', login);
-          localStorage.setItem('role', 'employee');
-
-          const params = new URLSearchParams(window.location.search);
-          const redirect = params.get('redirect') || 'https://rotorbus.ru/employee_dashboard.html';
-          window.location.href = decodeURIComponent(redirect);
+          localStorage.setItem('role', 'leader');
+          document.cookie = `userLogin=${encodeURIComponent(login)}; path=/; domain=.rotorbus.ru; max-age=${60*60*24*7}`;
+          window.location.href = `https://staff.rotorbus.ru/dashboard.html?user=${encodeURIComponent(login)}`;
         } else {
           alert('Неверный пароль');
         }
+      } else {
+        alert(data.message || 'Пользователь не найден');
       }
     } catch (err) {
-      console.error('Ошибка при обращении к серверу:', err);
-      alert('Ошибка соединения с сервером или формат ответа неверен');
+      console.error(err);
+      alert('Ошибка проверки пароля');
     }
   });
 });
