@@ -1,57 +1,49 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const secretKey = "rotor_secret_key_2025";
-
-  const leaders = {
-    "Ivan_Trufanov": "U2FsdGVkX18YZL9X4AciAxyaG9EZlXQQj5Et8TnLN9k=",
-    "Альберт Саргсян": "U2FsdGVkX18MFNQhm5y3JIGRFUiB5etIM5Tk0EGiY0hTkx6r1SJhPXdRU78QjmHF",
-    "Arseniy_Matveenko" : "U2FsdGVkX19S6k4+69DNG1QrcgbAZw64vLmATUeZSj/vdHbiWO+HI5dbGPGlcrCt",
-    "Aravan_Legends" : "U2FsdGVkX18do9+7nLkstQWH1pgQzbCFI380iY/sS4Q="
-    
-  };
-
-  // ---------- Сотрудники 
-  document.getElementById('loginForm').addEventListener('submit', (e) => {
+  // Обработка входа сотрудника
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+
     const login = document.getElementById('login').value.trim();
-    if (!login) return alert('Введите логин');
+    const password = document.getElementById('password').value.trim();
 
-    document.cookie = `userLogin=${encodeURIComponent(login)}; path=/; domain=.rotorbus.ru; max-age=${60*60*24*7}`;
-    localStorage.setItem('username', login);
-    localStorage.setItem('role', 'employee');
-
-    const params = new URLSearchParams(window.location.search);
-    const redirect = params.get('redirect') || 'https://rotorbus.ru/employee_dashboard.html';
-    window.location.href = decodeURIComponent(redirect);
-  });
-
-  // ---------- Руководители
-  const leaderBtn = document.getElementById('leaderBtn');
-  const leaderForm = document.getElementById('leaderForm');
-
-  leaderBtn.addEventListener('click', () => {
-    leaderForm.style.display = leaderForm.style.display === 'none' ? 'block' : 'none';
-  });
-
-  leaderForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const login = document.getElementById('leaderLogin').value.trim();
-    const password = document.getElementById('leaderPassword').value.trim();
-
-    if (!leaders[login]) return alert('Неверный логин руководителя');
+    if (!login || !password) return alert('Введите логин и пароль');
 
     try {
-      const decrypted = CryptoJS.AES.decrypt(leaders[login], secretKey).toString(CryptoJS.enc.Utf8);
-      if (password === decrypted) {
-        localStorage.setItem('username', login);
-        localStorage.setItem('role', 'leader');
+      const response = await fetch('https://rotor.pythonanywhere.com/get-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ login })
+      });
+
+      const data = await response.json();
+
+      if (data.status === 'ok' && data.password === password) {
+        // Авторизация успешна
         document.cookie = `userLogin=${encodeURIComponent(login)}; path=/; domain=.rotorbus.ru; max-age=${60*60*24*7}`;
-        window.location.href = `https://staff.rotorbus.ru/dashboard.html?user=${encodeURIComponent(login)}`;
+        localStorage.setItem('username', login);
+        localStorage.setItem('role', 'employee');
+
+        // Переход на панель сотрудника
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get('redirect') || 'https://rotorbus.ru/employee_dashboard.html';
+        window.location.href = decodeURIComponent(redirect);
+
       } else {
-        alert('Неверный пароль');
+        alert('Неверный логин или пароль');
       }
-    } catch(err) {
-      alert('Ошибка проверки пароля');
-      console.error(err);
+
+    } catch (error) {
+      console.error('Ошибка при подключении к API:', error);
+      alert('Ошибка соединения с сервером');
     }
+  });
+
+  // Кнопки
+  document.getElementById("managerLogin").addEventListener("click", () => {
+    window.location.href = "https://rotorbus.ru/uvehicles.html";
+  });
+
+  document.getElementById("helpBtn").addEventListener("click", () => {
+    window.location.href = "https://rotorbus.ru/info.html";
   });
 });
