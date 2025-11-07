@@ -39,11 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
 
       if (data.status === 'ok' && (data.password === password || (!data.password && !password))) {
-        // роль
         const role = leaders.includes(login) ? 'leader' : 'employee';
 
-        document.cookie = `userLogin=${encodeURIComponent(login)}; path=/; domain=.rotorbus.ru; max-age=${60*60*24*7}`;
-        document.cookie = `userRole=${role}; path=/; domain=.rotorbus.ru; max-age=${60*60*24*7}`;
+        const cookieOptions = 'path=/; domain=.rotorbus.ru; max-age=' + (60 * 60 * 24 * 7) + '; samesite=None; secure';
+        document.cookie = `userLogin=${encodeURIComponent(login)}; ${cookieOptions}`;
+        document.cookie = `userRole=${encodeURIComponent(role)}; ${cookieOptions}`;
+
         localStorage.setItem('username', login);
         localStorage.setItem('role', role);
 
