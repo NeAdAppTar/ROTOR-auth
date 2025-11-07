@@ -16,6 +16,20 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => toast.classList.remove('show'), 3000);
   }
 
+  function getCookie(name) {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? decodeURIComponent(match[2]) : null;
+  }
+
+  const loggedUser = getCookie('userLogin');
+  const loggedRole = getCookie('userRole');
+
+  if (loggedUser) {
+    const redirectUrl = 'https://dashboard.rotorbus.ru/index.html';
+    window.location.href = redirectUrl;
+    return; 
+  }
+
   document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
