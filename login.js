@@ -1,6 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
   const toast = document.getElementById('toast');
 
+  const leaders = [
+    'Ivan_Trufanov',
+    'Dmitry_Beloozerov',
+    'Альберт Саргсян',
+    'Arseniy_Matveenko',
+    'Aravan_Legends'
+  ];
+
   function showToast(message, color = 'rgba(255, 87, 34, 0.9)') {
     toast.textContent = message;
     toast.style.backgroundColor = color;
@@ -15,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const password = document.getElementById('password').value.trim();
     const button = e.target.querySelector('button');
 
-    if (!login || !password) return showToast('Введите логин и пароль');
+    if (!login) return showToast('Введите логин');
 
     button.disabled = true;
     const oldText = button.textContent;
@@ -30,15 +38,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const data = await response.json();
 
-      if (data.status === 'ok' && data.password === password) {
+      if (data.status === 'ok' && (data.password === password || (!data.password && !password))) {
+        // роль
+        const role = leaders.includes(login) ? 'leader' : 'employee';
 
         document.cookie = `userLogin=${encodeURIComponent(login)}; path=/; domain=.rotorbus.ru; max-age=${60*60*24*7}`;
+        document.cookie = `userRole=${role}; path=/; domain=.rotorbus.ru; max-age=${60*60*24*7}`;
         localStorage.setItem('username', login);
-        localStorage.setItem('role', 'employee');
+        localStorage.setItem('role', role);
 
         const params = new URLSearchParams(window.location.search);
         const redirect = params.get('redirect') || 'https://dashboard.rotorbus.ru/index.html';
         window.location.href = decodeURIComponent(redirect);
+
       } else {
         showToast('Неверный логин или пароль');
       }
