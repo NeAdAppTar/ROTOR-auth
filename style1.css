@@ -1,9 +1,20 @@
+@font-face {
+    font-family: 'YS Text';
+    font-weight: 700;
+    font-style: normal;
+    src: local('YS Text Bold'),
+         url('https://yastatic.net/s3/passport-static/core/v1.250.0/fonts/ys-text-bold/TR2STky64Ra69XlYzqKN7cnjYfQ.woff2') format('woff2'),
+         url('https://yastatic.net/s3/passport-static/core/v1.250.0/fonts/ys-text-bold/6n8FrCwGXwQ5ZumBk1SCxOl2ec8.woff') format('woff'),
+         url('https://yastatic.net/s3/passport-static/core/v1.250.0/fonts/ys-text-bold/o9D1OOQkIM1tjIvuGeHuvA0EgWA.ttf') format('truetype');
+}
+
+
 /* Общий сброс */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: 'Segoe UI', Roboto, sans-serif;
+  font-family: "YS Text",'Segoe UI', Roboto, sans-serif;
   color: #222;
   overflow: hidden;
 }
@@ -38,48 +49,58 @@ html, body {
 
 /* Карточка входа */
 .auth-card {
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(19, 19, 23, 1);
   border-radius: 20px;
   padding: 40px 50px;
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 25px rgba(99, 99, 99, 0.25);
   text-align: center;
-  max-width: 380px;
+  max-width: 300px;
   width: 90%;
 }
 
 /* Заголовок */
 .logo {
-  font-size: 2.2rem;
+  font-size: 32px;
   margin-bottom: 10px;
-  color: #000000;
+  margin: 0;
+  color: #ffffff;
   text-transform: uppercase;
   letter-spacing: 2px;
 }
 
+
 /* Подзаголовок */
 .subtitle {
-  color: #555;
+  color: #ffffff;
   font-size: 1rem;
   margin-bottom: 25px;
 }
 
 /* Поле ввода */
 .auth-card input {
-  width: 93%;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  margin-bottom: 15px;
-  font-size: 1rem;
-  text-align: center;
+  width: 88%;
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid #474747;
+  margin-bottom: 22px;
+  font-size: 20px;
+  text-align:left;
+  background-color: rgba(19, 19, 23, 1);
+    outline: none;
+    box-shadow: 0 0 0 0 transparent;
+    transition: box-shadow .2s;
+}
+
+input:focus {
+        box-shadow: 0 0 0 2px #fff200;  
 }
 
 /* Кнопка */
 .auth-card button {
   width: 100%;
-  padding: 12px;
+  padding: 16px;
   border: none;
-  border-radius: 8px;
+  border-radius: 20px;
   background: linear-gradient(90deg, #ffcc00, #ffd84d);
   color: #222;
   font-weight: 600;
@@ -95,9 +116,11 @@ html, body {
 
 /* Подвал */
 footer {
-  margin-top: 25px;
+  position: fixed;
+  bottom: 1px;
+  right: 20px;  
   font-size: 0.85rem;
-  color: #666;
+  color: #ffffff;
   line-height: 1.3;
 }
 
@@ -122,3 +145,12 @@ footer {
   opacity: 1;
   transform: translateX(-50%) translateY(-10px);
 }
+
+
+.background-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.7);
+}
+

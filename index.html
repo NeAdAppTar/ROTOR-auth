@@ -2,100 +2,12 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <title>ROTOR — Авторизация</title>
+  <title>Авторизация</title>
   <link rel="icon" type="image/png" href="icon.png">
   <link rel="stylesheet" href="style1.css">
   <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.min.js"></script>
   <script src="login.js" defer></script>
-  <style>
 
-
-
-
-    .background-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: brightness(0.4);
-    }
-
-
-
-
-
-    .logo {
-      margin: 0;
-      font-size: 32px;
-      color: #222;
-      letter-spacing: 1px;
-    }
-
-    .subtitle {
-      color: #777;
-      margin-bottom: 20px;
-    }
-
-    form input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-
-    form button {
-      width: 100%;
-      padding: 10px;
-      background-color: #ffeb3b;
-      border: none;
-      border-radius: 6px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    form button:hover {
-      background-color: #fdd835;
-    }
-
-    hr {
-      border: none;
-      border-top: 1px solid #ccc;
-      margin: 20px 0;
-    }
-
-    .button-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .button-row button {
-      flex: 1;
-      padding: 10px 0;
-      background: white;
-      border: 2px solid #ffeb3b;
-      border-radius: 6px;
-      font-weight: 600;
-      color: #333;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .button-row button:hover {
-      background-color: #fffde7;
-      transform: scale(1.03);
-    }
-
-    footer {
-      font-size: 13px;
-      color: #555;
-      margin-top: 10px;
-    }
-  </style>
 </head>
 <body>
   <div class="background-overlay">
@@ -104,28 +16,22 @@
 
   <div class="auth-container">
     <div class="auth-card">
-      <h1 class="logo">ROTOR</h1>
-      <p class="subtitle">Быстрый вход</p>
+      <h1 class="logo">Ротор ID</h1>
+      <p class="subtitle">Введите ник и пароль</p>
 
       <form id="loginForm">
-  <input type="text" id="login" placeholder="Введите ник" required>
-  <input type="password" id="password" placeholder="Введите пароль" required>
+  <input type="text" id="login" placeholder="Ник" required>
+  <input type="password" id="password" placeholder="Пароль" required>
   <button type="submit">Войти</button>
 </form>
 
 
       <footer>
-        <p>ООО «Ротор»<br>by <strong>NeAdAppTar</strong> & <strong>ShaUru1118</strong></p>
+        <p>2025, ООО «Ротор», by NeAdAppTar & ShaUru1118</p>
       </footer>
     </div>
   </div>
 
-
-      <footer>
-        <p>ООО «Ротор»<br>by <strong>NeAdAppTar</strong> & <strong>ShaUru1118</strong></p>
-      </footer>
-    </div>
-  </div>
   <div id="toast" class="toast"></div>  
 </body>
 </html>
