@@ -86,10 +86,12 @@ html, body {
   font-size: 20px;
   text-align:left;
   background-color: rgba(19, 19, 23, 1);
-    outline: none;
-    box-shadow: 0 0 0 0 transparent;
-    transition: box-shadow .2s;
+  color: #fff;          /* <-- делаем текст белым */
+  outline: none;
+  box-shadow: 0 0 0 0 transparent;
+  transition: box-shadow .2s;
 }
+
 
 input:focus {
         box-shadow: 0 0 0 2px #fff200;  
