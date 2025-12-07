@@ -1,14 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   const toast = document.getElementById('toast');
 
-  const leaders = [
-    'Ivan_Trufanov',
-    'Dmitry_Beloozerov',
-    'Альберт Саргсян',
-    'Arseniy_Matveenko',
-    'Aravan_Legends'
-  ];
-
   function showToast(message, color = 'rgba(255, 87, 34, 0.9)') {
     toast.textContent = message;
     toast.style.backgroundColor = color;
@@ -21,13 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
     return match ? decodeURIComponent(match[2]) : null;
   }
 
+  // Если пользователь уже вошёл → отправляем на дашборд
   const loggedUser = getCookie('userLogin');
-  const loggedRole = getCookie('userRole');
 
   if (loggedUser) {
-    const redirectUrl = 'https://dashboard.rotorbus.ru/index.html';
-    window.location.href = redirectUrl;
-    return; 
+    window.location.href = 'https://dashboard.rotorbus.ru/index.html';
+    return;
   }
 
   document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -44,32 +35,41 @@ document.addEventListener('DOMContentLoaded', () => {
     button.textContent = 'Проверка...';
 
     try {
-      const response = await fetch('https://rotor.pythonanywhere.com/get-password', {
+      // Новый API
+      const response = await fetch('https://transdigital.pythonanywhere.com/api/get_user/rotor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ login })
+        body: JSON.stringify({ name: login })
       });
 
       const data = await response.json();
 
-      if (data.status === 'ok' && (data.password === password || (!data.password && !password))) {
-        const role = leaders.includes(login) ? 'leader' : 'employee';
+      if (data.status === 'ok') {
+        const dbPassword = data.password || '';
 
-        const cookieOptions = 'path=/; domain=.rotorbus.ru; max-age=' + (60 * 60 * 24 * 7) + '; samesite=None; secure';
-        document.cookie = `userLogin=${encodeURIComponent(login)}; ${cookieOptions}`;
-        document.cookie = `userRole=${encodeURIComponent(role)}; ${cookieOptions}`;
+        // Проверяем пароль (если пустой – разрешаем вход)
+        if (dbPassword === password || (!dbPassword && !password)) {
 
-        localStorage.setItem('username', login);
-        localStorage.setItem('role', role);
+          const cookieOptions =
+            'path=/; domain=.rotorbus.ru; max-age=' + 60 * 60 * 24 * 7 +
+            '; samesite=None; secure';
 
-        const params = new URLSearchParams(window.location.search);
-        const redirect = params.get('redirect') || 'https://dashboard.rotorbus.ru/index.html';
-        window.location.href = decodeURIComponent(redirect);
+          // Сохраняем логин
+          document.cookie = `userLogin=${encodeURIComponent(login)}; ${cookieOptions}`;
 
+          // Никакой роли больше нет
+          localStorage.setItem('username', login);
+
+          const params = new URLSearchParams(window.location.search);
+          const redirect = params.get('redirect') || 'https://dashboard.rotorbus.ru/index.html';
+          window.location.href = decodeURIComponent(redirect);
+
+        } else {
+          showToast('Неверный логин или пароль');
+        }
       } else {
-        showToast('Неверный логин или пароль');
+        showToast('Пользователь не найден');
       }
-
     } catch (error) {
       console.error('Ошибка при подключении к API:', error);
       showToast('Ошибка соединения с сервером');
