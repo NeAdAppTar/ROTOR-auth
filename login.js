@@ -46,17 +46,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const correctPassword = data.password || '';
 
         if (correctPassword === password) {
-
           const cookieOptions =
             'path=/; domain=.rotorbus.ru; max-age=' +
             (60 * 60 * 24 * 7) +
             '; samesite=None; secure';
 
+          // Сохраняем ник в cookie
           document.cookie = `userLogin=${encodeURIComponent(login)}; ${cookieOptions}`;
-          document.cookie = `userRole=employee; ${cookieOptions}`; // роль пока одна
 
-          localStorage.setItem('username', login);
-          localStorage.setItem('role', 'employee');
+          // Сохраняем роль в cookie (по желанию)
+          document.cookie = `userRole=employee; ${cookieOptions}`;
+
+          // Сохраняем ник в localStorage под ключом userLogin
+          localStorage.setItem('userLogin', login);
+          localStorage.setItem('userRole', 'employee');
 
           const params = new URLSearchParams(window.location.search);
           const redirect = params.get('redirect') || 'https://dashboard.rotorbus.ru/index.html';
