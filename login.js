@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return match ? decodeURIComponent(match[2]) : null;
   }
 
-  // Если пользователь уже вошёл → отправляем на дашборд
   const loggedUser = getCookie('userLogin');
 
   if (loggedUser) {
@@ -35,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     button.textContent = 'Проверка...';
 
     try {
-      // Новый API
+      // API
       const response = await fetch('https://transdigital.pythonanywhere.com/api/get_user/rotor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -47,18 +46,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (data.status === 'ok') {
         const dbPassword = data.password || '';
 
-        // Проверяем пароль (если пустой – разрешаем вход)
+        // Пароль
         if (dbPassword === password || (!dbPassword && !password)) {
 
           const cookieOptions =
             'path=/; domain=.rotorbus.ru; max-age=' + 60 * 60 * 24 * 7 +
             '; samesite=None; secure';
 
-          // Сохраняем логин
           document.cookie = `userLogin=${encodeURIComponent(login)}; ${cookieOptions}`;
-
-          // Никакой роли больше нет
-          localStorage.setItem('username', login);
 
           const params = new URLSearchParams(window.location.search);
           const redirect = params.get('redirect') || 'https://dashboard.rotorbus.ru/index.html';
