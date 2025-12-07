@@ -13,9 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     return match ? decodeURIComponent(match[2]) : null;
   }
 
-  // Если пользователь уже вошёл → отправляем на дашборд
+  // Если уже залогинен — перейти в дашборд
   const loggedUser = getCookie('userLogin');
-
   if (loggedUser) {
     window.location.href = 'https://dashboard.rotorbus.ru/index.html';
     return;
@@ -44,32 +43,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const data = await response.json();
 
-      if (data.status === 'ok') {
-        const dbPassword = data.password || '';
-
-        // Проверяем пароль (если пустой – разрешаем вход)
-        if (dbPassword === password || (!dbPassword && !password)) {
-
-          const cookieOptions =
-            'path=/; domain=.rotorbus.ru; max-age=' + 60 * 60 * 24 * 7 +
-            '; samesite=None; secure';
-
-          // Сохраняем логин
-          document.cookie = `userLogin=${encodeURIComponent(login)}; ${cookieOptions}`;
-
-          // Никакой роли больше нет
-          localStorage.setItem('username', login);
-
-          const params = new URLSearchParams(window.location.search);
-          const redirect = params.get('redirect') || 'https://dashboard.rotorbus.ru/index.html';
-          window.location.href = decodeURIComponent(redirect);
-
-        } else {
-          showToast('Неверный логин или пароль');
-        }
-      } else {
+      if (data.status !== 'ok') {
         showToast('Пользователь не найден');
+        return;
       }
+
+      const dbPassword = data.password || '';
+
+      // Проверяем пароль (если пароль пустой — вход без пароля)
+      if (dbPassword === password || (!dbPassword && !password)) {
+
+        // 1) Удаляем все возможные старые куки
+        document.cookie = "userLogin=; path=/; max-age=0";
+        document.cookie = "userLogin=; path=/; domain=.rotorbus.ru; max-age=0";
+
+        // 2) Записываем новую куку
+        const cookieOptions =
+          'path=/; domain=.rotorbus.ru; max-age=' + 60 * 60 * 24 * 7 +
+          '; samesite=None; secure';
+
+        document.cookie = `userLogin=${encodeURIComponent(login)}; ${cookieOptions}`;
+
+        // 3) Перезаписываем localStorage
+        localStorage.removeItem('username');
+        localStorage.setItem('username', login);
+
+        // 4) Редирект
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get('redirect') || 'https://dashboard.rotorbus.ru/index.html';
+        window.location.href = decodeURIComponent(redirect);
+
+      } else {
+        showToast('Неверный логин или пароль');
+      }
+
     } catch (error) {
       console.error('Ошибка при подключении к API:', error);
       showToast('Ошибка соединения с сервером');
