@@ -86,7 +86,7 @@ html, body {
   font-size: 20px;
   text-align:left;
   background-color: rgba(19, 19, 23, 1);
-  color: #fff;          /* <-- делаем текст белым */
+  color: #fff;     
   outline: none;
   box-shadow: 0 0 0 0 transparent;
   transition: box-shadow .2s;
