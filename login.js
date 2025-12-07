@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
           document.cookie = `userLogin=${encodeURIComponent(login)}; ${cookieOptions}`;
           document.cookie = `userRole=employee; ${cookieOptions}`; // роль пока одна
 
-          localStorage.setItem('username', login);
+          localStorage.setItem('userLogin', login);
           localStorage.setItem('role', 'employee');
 
           const params = new URLSearchParams(window.location.search);
