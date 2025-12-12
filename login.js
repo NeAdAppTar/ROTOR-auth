@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const passHash = await sha256(password);
 
           const cookieOptions =
-            'path=/; domain=.rotorbus.ru; max-age=' + 60 * 60 * 24 * 7 +
+            'path=/; domain=.rotorbus.ru; max-age=' + 60 * 60 * 24 +
             '; samesite=None; secure';
 
           document.cookie = `userLogin=${encodeURIComponent(login)}; ${cookieOptions}`;
