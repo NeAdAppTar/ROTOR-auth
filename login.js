@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Если есть логин + хэш → на дашборд
   if (loggedUser && loggedHash) {
-    window.location.href = 'https://dashboard.rotorbus.ru/index.html';
+    window.location.href = 'https://dashboard.rotorprov.ru/index.html';
     return;
   }
 
@@ -62,14 +62,14 @@ document.addEventListener('DOMContentLoaded', () => {
           const passHash = await sha256(password);
 
           const cookieOptions =
-            'path=/; domain=.rotorbus.ru; max-age=' + 60 * 60 * 24 +
+            'path=/; domain=.rotorprov.ru; max-age=' + 60 * 60 * 24 +
             '; samesite=None; secure';
 
           document.cookie = `userLogin=${encodeURIComponent(login)}; ${cookieOptions}`;
           document.cookie = `userHash=${encodeURIComponent(passHash)}; ${cookieOptions}`;
 
           const params = new URLSearchParams(window.location.search);
-          const redirect = params.get('redirect') || 'https://dashboard.rotorbus.ru/index.html';
+          const redirect = params.get('redirect') || 'https://dashboard.rotorprov.ru/index.html';
           window.location.href = decodeURIComponent(redirect);
 
         } else {
