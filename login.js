@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     button.textContent = 'Проверка...';
 
     try {
-      const response = await fetch('https://transdigital.pythonanywhere.com/api/get_user/rotor', {
+      const response = await fetch('https://api.rotorprov.ru/api/get_user/rotor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: login })
