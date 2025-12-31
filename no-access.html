@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Доступ ограничен</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    @font-face {
+        font-family: 'YS Text';
+        font-weight: 700;
+        font-style: normal;
+        src: local('YS Text Bold'),
+             url('https://yastatic.net/s3/passport-static/core/v1.250.0/fonts/ys-text-bold/TR2STky64Ra69XlYzqKN7cnjYfQ.woff2') format('woff2'),
+             url('https://yastatic.net/s3/passport-static/core/v1.250.0/fonts/ys-text-bold/6n8FrCwGXwQ5ZumBk1SCxOl2ec8.woff') format('woff'),
+             url('https://yastatic.net/s3/passport-static/core/v1.250.0/fonts/ys-text-bold/o9D1OOQkIM1tjIvuGeHuvA0EgWA.ttf') format('truetype');
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: "YS Text",'Segoe UI', Roboto, sans-serif;
+      color: #222;
+      overflow: hidden;
+    }
+
+    .background-image {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.7);
+      z-index: -2;
+    }
+
+    .background-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 230, 100, 0.15);
+      z-index: -1;
+    }
+
+    .auth-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .auth-card {
+      background: rgba(19, 19, 23, 1);
+      border-radius: 20px;
+      padding: 40px 50px;
+      box-shadow: 0 4px 25px rgba(99, 99, 99, 0.25);
+      text-align: center;
+      max-width: 340px;
+      width: 90%;
+    }
+
+    .logo {
+      font-size: 28px;
+      margin-bottom: 12px;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .subtitle {
+      color: #ffffff;
+      font-size: 1rem;
+      margin-bottom: 30px;
+      line-height: 1.4;
+    }
+
+    .auth-card button {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #ffcc00, #ffd84d);
+      color: #222;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      margin-bottom: 15px;
+    }
+
+    .auth-card button.secondary {
+      background: transparent;
+      color: #ffffff;
+      border: 1px solid #474747;
+    }
+
+    .auth-card button:hover {
+      transform: scale(1.03);
+    }
+
+    .auth-card button.secondary:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    footer {
+      position: fixed;
+      bottom: 6px;
+      right: 20px;
+      font-size: 0.85rem;
+      color: #ffffff;
+      line-height: 1.3;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Фон -->
+  <div class="background-overlay">
+    <img src="pic1.jpg" alt="фон" class="background-image">
+  </div>
+
+  <!-- Контент -->
+  <div class="auth-container">
+    <div class="auth-card">
+      <h1 class="logo">Доступ закрыт</h1>
+      <p class="subtitle">
+        Похоже, вы попали на страницу,<br>
+        к которой у вас нет доступа.<br><br>
+        Возможно, требуется авторизация.
+      </p>
+
+      <button onclick="location.href='https://auth.rotorprov.ru/'">
+        Авторизоваться
+      </button>
+
+      <button class="secondary" onclick="location.href='https://rotorprov.ru/'">
+        Вернуться на главную
+      </button>
+    </div>
+  </div>
+
+  <footer>
+    © RotorProv
+  </footer>
+
+</body>
+</html>
