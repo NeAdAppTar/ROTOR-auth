@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     button.textContent = 'Проверка...';
 
     try {
-      const response = await fetch('https://31.184.253.115/api/get_user/rotor', {
+      const response = await fetch('http://31.184.253.115/api/get_user/rotor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: login })
