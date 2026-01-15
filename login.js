@@ -54,30 +54,22 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
 
       if (data.status === 'ok') {
-        const dbPassword = data.password || '';
 
-        if (dbPassword === password) {
+  const cookieOptions =
+    'path=/; domain=.rotorprov.ru; max-age=' + 60 * 60 * 24 +
+    '; samesite=None; secure';
 
-          // Хэш для хранения
-          const passHash = await sha256(password);
+  document.cookie = `userLogin=${encodeURIComponent(login)}; ${cookieOptions}`;
 
-          const cookieOptions =
-            'path=/; domain=.rotorprov.ru; max-age=' + 60 * 60 * 24 +
-            '; samesite=None; secure';
+  const redirect =
+    new URLSearchParams(location.search).get('redirect')
+    || 'https://dashboard.rotorprov.ru/index.html';
 
-          document.cookie = `userLogin=${encodeURIComponent(login)}; ${cookieOptions}`;
-          document.cookie = `userHash=${encodeURIComponent(passHash)}; ${cookieOptions}`;
+  location.href = redirect;
 
-          const params = new URLSearchParams(window.location.search);
-          const redirect = params.get('redirect') || 'https://dashboard.rotorprov.ru/index.html';
-          window.location.href = decodeURIComponent(redirect);
-
-        } else {
-          showToast('Неверный логин или пароль');
-        }
-      } else {
-        showToast('Пользователь не найден');
-      }
+} else {
+  showToast('Пользователь не найден');
+}
     } catch (error) {
       console.error('Ошибка при подключении к API:', error);
       showToast('Ошибка соединения с сервером');
