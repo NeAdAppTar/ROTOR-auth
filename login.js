@@ -18,15 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function getCookie(name) {
-    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    const match = document.cookie.match(
+      new RegExp('(^| )' + name + '=([^;]+)')
+    );
     return match ? decodeURIComponent(match[2]) : null;
   }
 
+  // если уже есть cookie — редирект
   const loggedUser = getCookie('userLogin');
-  const loggedHash = getCookie('userHash');
-
-  // Если уже залогинен → на дашборд
-  if (loggedUser && loggedHash) {
+  if (loggedUser) {
     window.location.href = 'https://dashboard.rotorprov.ru/index.html';
     return;
   }
@@ -38,55 +38,63 @@ document.addEventListener('DOMContentLoaded', () => {
     const password = document.getElementById('password').value.trim();
     const button = e.target.querySelector('button');
 
-    if (!login) return showToast('Введите логин');
+    if (!login || !password) {
+      showToast('Введите логин и пароль');
+      return;
+    }
 
     button.disabled = true;
     const oldText = button.textContent;
     button.textContent = 'Проверка...';
 
     try {
-      // ✅ Новый API
-      const response = await fetch('https://rotorbus.ru/api/users/rotor');
+      // ✅ НОВЫЙ ПРАВИЛЬНЫЙ API
+      const response = await fetch(
+        'https://rotorbus.ru/api/login/rotor',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: login,
+            password: password
+          })
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('HTTP ' + response.status);
+      }
+
       const data = await response.json();
 
       if (data.status !== 'ok') {
-        showToast('Ошибка получения пользователей');
+        showToast(
+          data.message || 'Неверный логин или пароль'
+        );
         return;
       }
 
-      // 🔍 Ищем пользователя по имени
-      const user = data.users.find(u => u.name === login);
-
-      if (!user) {
-        showToast('Пользователь не найден');
-        return;
-      }
-
-      const dbPassword = user.password || '';
-
-      if (dbPassword !== password) {
-        showToast('Неверный логин или пароль');
-        return;
-      }
-
-      // Хэшируем пароль для cookie
+      // ✅ логин успешен
       const passHash = await sha256(password);
 
       const cookieOptions =
         'path=/; domain=.rotorprov.ru; max-age=' + 60 * 60 * 24 +
         '; samesite=None; secure';
 
-      document.cookie = `userLogin=${encodeURIComponent(login)}; ${cookieOptions}`;
-      document.cookie = `userHash=${encodeURIComponent(passHash)}; ${cookieOptions}`;
+      document.cookie =
+        `userLogin=${encodeURIComponent(login)}; ${cookieOptions}`;
+      document.cookie =
+        `userHash=${encodeURIComponent(passHash)}; ${cookieOptions}`;
 
       const params = new URLSearchParams(window.location.search);
       const redirect =
-        params.get('redirect') || 'https://dashboard.rotorprov.ru/index.html';
+        params.get('redirect') ||
+        'https://dashboard.rotorprov.ru/index.html';
 
       window.location.href = decodeURIComponent(redirect);
 
     } catch (error) {
-      console.error('Ошибка при подключении к API:', error);
+      console.error('Ошибка логина:', error);
       showToast('Ошибка соединения с сервером');
     } finally {
       button.disabled = false;
