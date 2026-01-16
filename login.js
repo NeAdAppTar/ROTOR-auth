@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const loggedUser = getCookie('userLogin');
   const loggedHash = getCookie('userHash');
 
-  // Если есть логин + хэш → на дашборд
+  // Если уже залогинен → на дашборд
   if (loggedUser && loggedHash) {
     window.location.href = 'https://dashboard.rotorprov.ru/index.html';
     return;
@@ -45,31 +45,46 @@ document.addEventListener('DOMContentLoaded', () => {
     button.textContent = 'Проверка...';
 
     try {
-      const response = await fetch('https://rotorbus.ru/api/get_user/rotor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: login })
-      });
-
+      // ✅ Новый API
+      const response = await fetch('https://rotorbus.ru/api/users/rotor');
       const data = await response.json();
 
-      if (data.status === 'ok') {
+      if (data.status !== 'ok') {
+        showToast('Ошибка получения пользователей');
+        return;
+      }
 
-  const cookieOptions =
-    'path=/; domain=.rotorprov.ru; max-age=' + 60 * 60 * 24 +
-    '; samesite=None; secure';
+      // 🔍 Ищем пользователя по имени
+      const user = data.users.find(u => u.name === login);
 
-  document.cookie = `userLogin=${encodeURIComponent(login)}; ${cookieOptions}`;
+      if (!user) {
+        showToast('Пользователь не найден');
+        return;
+      }
 
-  const redirect =
-    new URLSearchParams(location.search).get('redirect')
-    || 'https://dashboard.rotorprov.ru/index.html';
+      const dbPassword = user.password || '';
 
-  location.href = redirect;
+      if (dbPassword !== password) {
+        showToast('Неверный логин или пароль');
+        return;
+      }
 
-} else {
-  showToast('Пользователь не найден');
-}
+      // Хэшируем пароль для cookie
+      const passHash = await sha256(password);
+
+      const cookieOptions =
+        'path=/; domain=.rotorprov.ru; max-age=' + 60 * 60 * 24 +
+        '; samesite=None; secure';
+
+      document.cookie = `userLogin=${encodeURIComponent(login)}; ${cookieOptions}`;
+      document.cookie = `userHash=${encodeURIComponent(passHash)}; ${cookieOptions}`;
+
+      const params = new URLSearchParams(window.location.search);
+      const redirect =
+        params.get('redirect') || 'https://dashboard.rotorprov.ru/index.html';
+
+      window.location.href = decodeURIComponent(redirect);
+
     } catch (error) {
       console.error('Ошибка при подключении к API:', error);
       showToast('Ошибка соединения с сервером');
