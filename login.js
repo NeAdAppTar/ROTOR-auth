@@ -1,12 +1,3 @@
-async function sha256(text) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(text);
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(hash))
-    .map(b => b.toString(16).padStart(2, "0"))
-    .join("");
-}
-
 document.addEventListener('DOMContentLoaded', () => {
   const toast = document.getElementById('toast');
 
@@ -24,9 +15,17 @@ document.addEventListener('DOMContentLoaded', () => {
     return match ? decodeURIComponent(match[2]) : null;
   }
 
+  function setCookie(name, value, maxAgeSeconds) {
+    const cookieOptions =
+      'path=/; domain=.rotorprov.ru; max-age=' + maxAgeSeconds +
+      '; samesite=None; secure';
+    document.cookie = `${name}=${encodeURIComponent(value)}; ${cookieOptions}`;
+  }
+
   // если уже есть cookie — редирект
   const loggedUser = getCookie('userLogin');
-  if (loggedUser) {
+  const loggedPass = getCookie('userPass');
+  if (loggedUser && loggedPass) {
     window.location.href = 'https://dashboard.rotorprov.ru/index.html';
     return;
   }
@@ -48,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
     button.textContent = 'Проверка...';
 
     try {
-      // ✅ НОВЫЙ ПРАВИЛЬНЫЙ API
       const response = await fetch(
         'https://rotorbus.ru/api/login/rotor',
         {
@@ -61,30 +59,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       );
 
-      if (!response.ok) {
-        throw new Error('HTTP ' + response.status);
-      }
+      if (!response.ok) throw new Error('HTTP ' + response.status);
 
       const data = await response.json();
 
       if (data.status !== 'ok') {
-        showToast(
-          data.message || 'Неверный логин или пароль'
-        );
+        showToast(data.message || 'Неверный логин или пароль');
         return;
       }
 
-      // ✅ логин успешен
-      const passHash = await sha256(password);
-
-      const cookieOptions =
-        'path=/; domain=.rotorprov.ru; max-age=' + 60 * 60 * 24 +
-        '; samesite=None; secure';
-
-      document.cookie =
-        `userLogin=${encodeURIComponent(login)}; ${cookieOptions}`;
-      document.cookie =
-        `userHash=${encodeURIComponent(passHash)}; ${cookieOptions}`;
+      const maxAge = 60 * 60 * 4; // 4 часа
+      setCookie('userLogin', login, maxAge);
+      setCookie('userPass', password, maxAge);
 
       const params = new URLSearchParams(window.location.search);
       const redirect =
