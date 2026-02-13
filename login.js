@@ -72,6 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
       setCookie('userLogin', login, maxAge);
       setCookie('userPass', password, maxAge);
 
+      await new Promise(r => setTimeout(r, 150)); // чтоб куки сохранились нормально
+
       const params = new URLSearchParams(window.location.search);
       const redirect =
         params.get('redirect') ||
