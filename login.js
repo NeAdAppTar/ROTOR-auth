@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(window.location.search);
       const redirect =
         params.get('redirect') ||
-        'https://dashboard.rotorprov.ru/index.html';
+        'https://dashboard.rotorprov.ru/employee_dashboard.html';
 
       window.location.href = decodeURIComponent(redirect);
 
