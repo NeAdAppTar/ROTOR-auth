@@ -17,22 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ================= COOKIES =================
-  function getCookie(name) {
-    const match = document.cookie.match(
-      new RegExp('(^| )' + name + '=([^;]+)')
-    );
-    return match ? decodeURIComponent(match[2]) : null;
-  }
-
   function setCookie(name, value, maxAgeSeconds) {
     const cookieOptions =
       'path=/; domain=.rotorprov.ru; max-age=' + maxAgeSeconds +
       '; samesite=None; secure';
     document.cookie = `${name}=${encodeURIComponent(value)}; ${cookieOptions}`;
   }
-
-  // ❌ УБРАН авто-редирект по cookie
-  // Теперь всегда проходит проверка note
 
   // ================= SUBMIT =================
   form.addEventListener('submit', async (e) => {
@@ -73,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
-        // показываем поле пароля
         passwordInput.style.display = 'block';
         passwordInput.required = true;
         passwordInput.focus();
@@ -129,19 +118,25 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      console.log("USER:", user);
-      console.log("NOTE:", user.note);
+      console.log("NOTE RAW:", JSON.stringify(user.note));
 
       // ================= УСТАНАВЛИВАЕМ COOKIE =================
       const maxAge = 60 * 60 * 4;
       setCookie('userLogin', login, maxAge);
       setCookie('userPass', password, maxAge);
 
-      // ================= ПРОВЕРКА NOTE =================
-      if (
-        user.note &&
-        user.note.toLowerCase().includes('требуется заполнение профиля')
-      ) {
+      // ================= УСТОЙЧИВАЯ ПРОВЕРКА NOTE =================
+      const noteText = (user.note || '')
+        .toString()
+        .toLowerCase()
+        .trim();
+
+      // Проверяем более гибко
+      const needsProfileCompletion =
+        noteText.includes('заполн') &&
+        noteText.includes('профил');
+
+      if (needsProfileCompletion) {
         window.location.href =
           'https://dashboard.rotorprov.ru/complete_profile.html';
         return;
@@ -156,7 +151,13 @@ document.addEventListener('DOMContentLoaded', () => {
       showToast('Ошибка соединения с сервером');
     } finally {
       button.disabled = false;
-      if (loginStep) button.textContent = oldText;
+
+      // Возвращаем текст кнопки только если остались на шаге логина
+      if (loginStep) {
+        button.textContent = oldText;
+      } else {
+        button.textContent = 'Войти';
+      }
     }
 
   });
