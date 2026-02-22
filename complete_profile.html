@@ -55,10 +55,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const login = getCookie('userLogin');
   const passwordCookie = getCookie('userPass');
 
-  if (!login || !passwordCookie) {
-    window.location.href = "https://rotorprov.ru/index.html";
-    return;
-  }
+  if (!login) {
+  window.location.href = "https://rotorprov.ru/index.html";
+  return;
+}
 
   try {
     // Получаем пользователя
