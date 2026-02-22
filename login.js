@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const maxAge = 60 * 60 * 4;
           setCookie('userLogin', login, maxAge);
           window.location.href =
-            'https://auth.rotorprov.ru/complete_profile.html';
+            'https://auth.rotorprov.ru/complete_profile.html'; // dozapolnenie
           return;
         }
 
