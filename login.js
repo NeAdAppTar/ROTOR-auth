@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // ================= ОБЫЧНЫЙ ВХОД =================
+      // ================= ОБЫЧНЫЙ ВХОД 
       window.location.href =
         'https://dashboard.rotorprov.ru/employee_dashboard.html';
 
