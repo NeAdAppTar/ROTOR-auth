@@ -112,6 +112,9 @@ document.addEventListener('DOMContentLoaded', () => {
       setCookie('userLogin', login, maxAge);
       setCookie('userPass', password, maxAge);
 
+      console.log("LOGIN:", login);
+console.log("USER FOUND:", user);
+
       if (user.note && user.note.trim() === 'Требуется заполнение профиля') {
     window.location.href =
     'https://dashboard.rotorprov.ru/complete_profile.html';
