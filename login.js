@@ -123,7 +123,7 @@ if (
   user.note.toLowerCase().includes('требуется заполнение профиля')
 ) {
   window.location.href =
-    'https://dashboard.rotorprov.ru/complete_profile.html';
+    'https://dashboard.rotorprov.ru/complete_profile.html'; // z
   return;
 }
 
