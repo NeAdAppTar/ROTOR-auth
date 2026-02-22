@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (needsProfileCompletion) {
           window.location.href =
-            'https://dashboard.rotorprov.ru/complete_profile.html';
+            'https://auth.rotorprov.ru/complete_profile.html';
           return;
         }
 
