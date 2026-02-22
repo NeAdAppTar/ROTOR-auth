@@ -1,12 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
+
   const toast = document.getElementById('toast');
   const loginInput = document.getElementById('login');
   const passwordInput = document.getElementById('password');
   const form = document.getElementById('loginForm');
   const button = form.querySelector('button');
 
-  let loginStep = true; // true = ввод логина, false = ввод пароля
+  let loginStep = true;
 
+  // ================= TOAST =================
   function showToast(message, color = 'rgba(255, 87, 34, 0.9)') {
     toast.textContent = message;
     toast.style.backgroundColor = color;
@@ -14,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => toast.classList.remove('show'), 3000);
   }
 
+  // ================= COOKIES =================
   function getCookie(name) {
     const match = document.cookie.match(
       new RegExp('(^| )' + name + '=([^;]+)')
@@ -28,14 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.cookie = `${name}=${encodeURIComponent(value)}; ${cookieOptions}`;
   }
 
-  // если уже есть cookie — редирект
-  const loggedUser = getCookie('userLogin');
-  const loggedPass = getCookie('userPass');
-  if (loggedUser && loggedPass) {
-    window.location.href = 'https://dashboard.rotorprov.ru/index.html';
-    return;
-  }
+  // ❌ УБРАН авто-редирект по cookie
+  // Теперь всегда проходит проверка note
 
+  // ================= SUBMIT =================
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -52,31 +51,39 @@ document.addEventListener('DOMContentLoaded', () => {
     button.textContent = 'Проверка...';
 
     try {
-      // ШАГ 1 — проверяем существует ли пользователь
+
+      // ================= ШАГ 1 — проверка существования =================
       if (loginStep) {
+
         const response = await fetch(
           'https://rotorbus.ru/api/users/rotor'
         );
 
+        if (!response.ok) throw new Error('Ошибка сервера');
+
         const data = await response.json();
 
-        const user = data.users.find(u => u.name === login);
+        const user = data.users.find(
+          u => u.name &&
+          u.name.trim().toLowerCase() === login.toLowerCase()
+        );
 
         if (!user) {
           showToast('Пользователь не найден');
           return;
         }
 
-        // Показываем пароль
+        // показываем поле пароля
         passwordInput.style.display = 'block';
         passwordInput.required = true;
         passwordInput.focus();
+
         button.textContent = 'Войти';
         loginStep = false;
         return;
       }
 
-      // ШАГ 2 — авторизация
+      // ================= ШАГ 2 — логин =================
       if (!password) {
         showToast('Введите пароль');
         return;
@@ -94,39 +101,53 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       );
 
+      if (!response.ok) throw new Error('Ошибка сервера');
+
       const data = await response.json();
 
       if (data.status !== 'ok') {
-        showToast('Неверный пароль');
+        showToast('Неверный логин или пароль');
         return;
       }
 
-      // Получаем данные пользователя
+      // ================= ПОЛУЧАЕМ ДАННЫЕ ПОЛЬЗОВАТЕЛЯ =================
       const usersResponse = await fetch(
-  'https://rotorbus.ru/api/users/rotor'
-);
-const usersData = await usersResponse.json();
+        'https://rotorbus.ru/api/users/rotor'
+      );
 
-const user = usersData.users.find(
-  u => u.name && u.name.trim().toLowerCase() === login.trim().toLowerCase()
-);
+      if (!usersResponse.ok) throw new Error('Ошибка сервера');
 
-if (!user) {
-  showToast('Пользователь не найден после входа');
-  return;
-}
+      const usersData = await usersResponse.json();
 
-console.log("NOTE:", user.note);
+      const user = usersData.users.find(
+        u => u.name &&
+        u.name.trim().toLowerCase() === login.toLowerCase()
+      );
 
-if (
-  user.note &&
-  user.note.toLowerCase().includes('требуется заполнение профиля')
-) {
-  window.location.href =
-    'https://dashboard.rotorprov.ru/complete_profile.html'; // z
-  return;
-}
+      if (!user) {
+        showToast('Ошибка получения данных пользователя');
+        return;
+      }
 
+      console.log("USER:", user);
+      console.log("NOTE:", user.note);
+
+      // ================= УСТАНАВЛИВАЕМ COOKIE =================
+      const maxAge = 60 * 60 * 4;
+      setCookie('userLogin', login, maxAge);
+      setCookie('userPass', password, maxAge);
+
+      // ================= ПРОВЕРКА NOTE =================
+      if (
+        user.note &&
+        user.note.toLowerCase().includes('требуется заполнение профиля')
+      ) {
+        window.location.href =
+          'https://dashboard.rotorprov.ru/complete_profile.html';
+        return;
+      }
+
+      // ================= ОБЫЧНЫЙ ВХОД =================
       window.location.href =
         'https://dashboard.rotorprov.ru/employee_dashboard.html';
 
@@ -137,5 +158,7 @@ if (
       button.disabled = false;
       if (loginStep) button.textContent = oldText;
     }
+
   });
+
 });
