@@ -103,23 +103,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Получаем данные пользователя
       const usersResponse = await fetch(
-        'https://rotorbus.ru/api/users/rotor'
-      );
-      const usersData = await usersResponse.json();
-      const user = usersData.users.find(u => u.name === login);
+  'https://rotorbus.ru/api/users/rotor'
+);
+const usersData = await usersResponse.json();
 
-      const maxAge = 60 * 60 * 4;
-      setCookie('userLogin', login, maxAge);
-      setCookie('userPass', password, maxAge);
+const user = usersData.users.find(
+  u => u.name && u.name.trim().toLowerCase() === login.trim().toLowerCase()
+);
 
-      console.log("LOGIN:", login);
-      console.log("USER FOUND:", user);
+if (!user) {
+  showToast('Пользователь не найден после входа');
+  return;
+}
 
-      if (user.note && user.note.trim() === 'Требуется заполнение профиля') {
-    window.location.href =
+console.log("NOTE:", user.note);
+
+if (
+  user.note &&
+  user.note.toLowerCase().includes('требуется заполнение профиля')
+) {
+  window.location.href =
     'https://dashboard.rotorprov.ru/complete_profile.html';
-    return;
-    }
+  return;
+}
 
       window.location.href =
         'https://dashboard.rotorprov.ru/employee_dashboard.html';
