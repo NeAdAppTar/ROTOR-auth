@@ -112,11 +112,11 @@ document.addEventListener('DOMContentLoaded', () => {
       setCookie('userLogin', login, maxAge);
       setCookie('userPass', password, maxAge);
 
-      // ✅ ПРОВЕРКА ЗАПОЛНЕННОСТИ
-      if (!user.account || !user.vk || !password) {
-        window.location.href = 'https://dashboard.rotorprov.ru/complete_profile.html';
-        return;
-      }
+      if (user.note && user.note.trim() === 'Требуется заполнение профиля') {
+    window.location.href =
+    'https://dashboard.rotorprov.ru/complete_profile.html';
+    return;
+    }
 
       window.location.href =
         'https://dashboard.rotorprov.ru/employee_dashboard.html';
