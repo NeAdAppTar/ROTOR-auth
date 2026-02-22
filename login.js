@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
       setCookie('userPass', password, maxAge);
 
       console.log("LOGIN:", login);
-console.log("USER FOUND:", user);
+      console.log("USER FOUND:", user);
 
       if (user.note && user.note.trim() === 'Требуется заполнение профиля') {
     window.location.href =
