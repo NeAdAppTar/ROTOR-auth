@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try {
     // Получаем пользователя
-    const response = await fetch('https://rotorbus.ru/api/users/rotor');
+    const response = await fetch('https://api.rotorbus.ru/users/rotor');
     const data = await response.json();
 
     const user = data.users.find(u => u.name === login);
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       button.textContent = "Сохранение...";
 
       const updateResponse = await fetch(
-        `https://rotorbus.ru/api/user/rotor/${user.id}`,
+        `https://api.rotorbus.ru/user/rotor/${user.id}`,
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },

@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (loginStep) {
 
         const response = await fetch(
-          'https://rotorbus.ru/api/users/rotor'
+          'https://api.rotorbus.ru/users/rotor'
         );
 
         if (!response.ok) throw new Error();
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const response = await fetch(
-        'https://rotorbus.ru/api/login/rotor',
+        'https://api.rotorbus.ru/login/rotor',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
