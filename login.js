@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+  const params = new URLSearchParams(window.location.search);
+  const redirectUrl = params.get('redirect');
   const toast = document.getElementById('toast');
   const loginInput = document.getElementById('login');
   const passwordInput = document.getElementById('password');
@@ -119,8 +121,12 @@ document.addEventListener('DOMContentLoaded', () => {
       setCookie('userLogin', login, maxAge);
       setCookie('userPass', password, maxAge);
 
-      window.location.href =
-        'https://dashboard.rotorprov.ru/employee_dashboard.html';
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      } else {
+        window.location.href =
+          'https://dashboard.rotorprov.ru/employee_dashboard.html';
+      }
 
     } catch (error) {
       console.error(error);
