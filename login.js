@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
 
-      // ================= ШАГ 1 =================
+      // 1
       if (loginStep) {
 
         const response = await fetch(
@@ -62,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
-        // 🔥 ПРОВЕРКА NOTE УЖЕ НА ПЕРВОМ ШАГЕ
         const noteText = (user.note || '')
           .toString()
           .toLowerCase()
@@ -80,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
-        // если профиль норм — показываем пароль
+        // показ пароля
         passwordInput.style.display = 'block';
         passwordInput.required = true;
         passwordInput.focus();
@@ -90,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // ================= ШАГ 2 =================
+      // 2
       if (!password) {
         showToast('Введите пароль');
         return;
@@ -140,7 +139,5 @@ document.addEventListener('DOMContentLoaded', () => {
         button.textContent = 'Войти';
       }
     }
-
   });
-
 });
